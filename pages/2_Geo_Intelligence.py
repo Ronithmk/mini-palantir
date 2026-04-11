@@ -24,8 +24,8 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-tab_map, tab_scatter, tab_density, tab_zones, tab_anomaly = st.tabs([
-    "Interactive Map", "Session Scatter", "Density Heatmap", "Zone Analysis", "Anomalies"
+tab_map, tab_scatter, tab_density, tab_3d, tab_zones, tab_anomaly = st.tabs([
+    "Interactive Map", "Session Scatter", "Density Heatmap", "3D Map", "Zone Analysis", "Anomalies"
 ])
 
 # ── Zone-type hex colours (for folium CircleMarker) ───────────────────────────
@@ -297,6 +297,167 @@ with tab_density:
                 f'</div>',
                 unsafe_allow_html=True,
             )
+
+with tab_3d:
+    import pydeck as pdk
+
+    col_3d, col_3dc = st.columns([3, 1])
+
+    with col_3dc:
+        st.markdown('<div class="section-hdr">3D Map Controls</div>', unsafe_allow_html=True)
+        pitch   = st.slider("Camera Pitch", 0, 70, 50, key="3d_pitch")
+        bearing = st.slider("Bearing", 0, 360, 20, key="3d_bearing")
+        radius  = st.slider("Hex Radius (m)", 100, 2000, 400, step=50, key="3d_radius")
+        elev_sc = st.slider("Elevation Scale", 10, 200, 60, key="3d_elev")
+        layer_choice = st.radio(
+            "Layer type",
+            ["Hexagon (density)", "Columns (zones)", "Both"],
+            key="3d_layer",
+        )
+        st.markdown(
+            '<div class="pal-card" style="margin-top:12px">'
+            '<div class="section-hdr">Legend</div>'
+            '<div style="font-size:.72rem;color:#8C8C8C;line-height:1.8;">'
+            '<span style="color:#0B88F8">■</span> Low density<br>'
+            '<span style="color:#23D18B">■</span> Medium<br>'
+            '<span style="color:#F5A623">■</span> High<br>'
+            '<span style="color:#F14C4C">■</span> Very high<br>'
+            '<span style="color:#ffffff">●</span> Zone centroid<br>'
+            '<span style="color:#F14C4C">●</span> Anomaly<br>'
+            '<span style="color:#23D18B">▲</span> Predicted location'
+            '</div></div>',
+            unsafe_allow_html=True,
+        )
+
+    with col_3d:
+        # ── Hexagon layer ──────────────────────────────────────────────────────
+        hex_data = clust[["lat", "lon", "duration_min"]].copy()
+        hex_data = hex_data.rename(columns={"lat": "latitude", "lon": "longitude"})
+
+        hex_layer = pdk.Layer(
+            "HexagonLayer",
+            data=hex_data,
+            get_position=["longitude", "latitude"],
+            get_elevation="duration_min",
+            elevation_scale=elev_sc,
+            elevation_range=[0, 3000],
+            radius=radius,
+            pickable=True,
+            extruded=True,
+            coverage=0.85,
+            color_range=[
+                [11,  50, 120, 200],   # deep blue
+                [11, 136, 248, 220],   # cobalt
+                [35, 209, 139, 220],   # green
+                [245, 166, 35, 220],   # orange
+                [241,  76,  76, 230],  # red
+                [255, 255, 255, 240],  # white peak
+            ],
+        )
+
+        # ── Column layer for zone centroids ────────────────────────────────────
+        valid = stats[stats["cluster_id"] != -1].copy()
+        zt_rgb = {
+            "PRIMARY":   [11, 136, 248],
+            "SECONDARY": [245, 166, 35],
+            "TRANSIT":   [191, 90, 242],
+            "NOISE":     [68, 68, 68],
+        }
+        col_data = []
+        for _, row in valid.iterrows():
+            zt = row.get("zone_type", "TRANSIT")
+            rgb = zt_rgb.get(zt, [68, 68, 68])
+            col_data.append({
+                "longitude": row["centroid_lon"],
+                "latitude":  row["centroid_lat"],
+                "height":    int(row["likelihood_pct"] * 20),
+                "label":     row["label"],
+                "r": rgb[0], "g": rgb[1], "b": rgb[2],
+            })
+        import pandas as _pd
+        col_df = _pd.DataFrame(col_data)
+
+        column_layer = pdk.Layer(
+            "ColumnLayer",
+            data=col_df,
+            get_position=["longitude", "latitude"],
+            get_elevation="height",
+            elevation_scale=8,
+            radius=max(radius * 1.5, 500),
+            get_fill_color=["r", "g", "b", 200],
+            get_line_color=[255, 255, 255, 60],
+            line_width_min_pixels=1,
+            pickable=True,
+            extruded=True,
+            auto_highlight=True,
+        )
+
+        # ── Anomaly scatter layer ──────────────────────────────────────────────
+        anom_pts = anomdf[anomdf["anomaly"]][["lat", "lon"]].copy()
+        anom_pts = anom_pts.rename(columns={"lat": "latitude", "lon": "longitude"})
+        anom_layer = pdk.Layer(
+            "ScatterplotLayer",
+            data=anom_pts,
+            get_position=["longitude", "latitude"],
+            get_color=[241, 76, 76, 220],
+            get_radius=max(radius * 0.6, 150),
+            pickable=True,
+        )
+
+        # ── Predicted location marker ──────────────────────────────────────────
+        layers = []
+        if layer_choice == "Hexagon (density)":
+            layers = [hex_layer, anom_layer]
+        elif layer_choice == "Columns (zones)":
+            layers = [column_layer, anom_layer]
+        else:
+            layers = [hex_layer, column_layer, anom_layer]
+
+        if pred:
+            pred_layer = pdk.Layer(
+                "ScatterplotLayer",
+                data=_pd.DataFrame([{"latitude": pred["lat"], "longitude": pred["lon"]}]),
+                get_position=["longitude", "latitude"],
+                get_color=[35, 209, 139, 255],
+                get_radius=max(radius * 0.8, 200),
+                pickable=True,
+            )
+            layers.append(pred_layer)
+
+        view = pdk.ViewState(
+            latitude=bg["lat"],
+            longitude=bg["lon"],
+            zoom=9,
+            pitch=pitch,
+            bearing=bearing,
+        )
+
+        deck = pdk.Deck(
+            layers=layers,
+            initial_view_state=view,
+            map_provider="carto",
+            map_style="dark",
+            tooltip={
+                "html": "<b>{label}</b><br>Sessions: {sessions}<br>Likelihood: {likelihood_pct}%",
+                "style": {
+                    "backgroundColor": "#1C1C1C",
+                    "color": "#F0F0F0",
+                    "fontFamily": "monospace",
+                    "fontSize": "12px",
+                    "border": "1px solid #2A2A2A",
+                    "padding": "8px",
+                },
+            },
+        )
+        st.pydeck_chart(deck, use_container_width=True, height=580)
+
+        st.markdown(
+            f'<div style="font-size:.68rem;color:#444444;margin-top:4px;text-align:center;">'
+            f'Target: {bg.get("city")}, {bg.get("country")} · '
+            f'{bg["lat"]:.5f}° N, {bg["lon"]:.5f}° E · Drag to rotate · Scroll to zoom'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
 
 with tab_zones:
     col_z1, col_z2 = st.columns(2)
