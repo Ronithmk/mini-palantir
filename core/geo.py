@@ -82,9 +82,41 @@ class GeoAnalyzer:
             recency = max(0.0, 1.0 - days_ago / 45)
             freq = len(sub) / max(len(df), 1)
             likelihood = round((recency * 0.60 + freq * 0.40) * 100, 1)
+
+            # Zone type (Trackr-style)
+            if likelihood >= 60:
+                zone_type = "PRIMARY"
+            elif likelihood >= 30:
+                zone_type = "SECONDARY"
+            else:
+                zone_type = "TRANSIT"
+
+            # Active time window
+            hour_dist = sub.groupby("hour")["duration_min"].sum()
+            peak_h = int(hour_dist.idxmax()) if not hour_dist.empty else 0
+            end_h  = (peak_h + 3) % 24
+            if 5 <= peak_h < 12:
+                period = "Morning"
+            elif 12 <= peak_h < 17:
+                period = "Afternoon"
+            elif 17 <= peak_h < 21:
+                period = "Evening"
+            else:
+                period = "Night"
+            active_window = f"{period}  {peak_h:02d}:00 – {end_h:02d}:00"
+
+            # Visit frequency
+            total_span_days = max((sub["timestamp"].max() - sub["timestamp"].min()).days, 1)
+            spd = len(sub) / total_span_days
+            frequency = "Daily" if spd >= 0.8 else "Weekly" if spd >= 0.2 else "Occasional"
+
+            # 24-bin hourly sparkline data
+            spark = [int(hour_dist.get(h, 0)) for h in range(24)]
+
             rows.append({
                 "cluster_id": cid,
                 "label": "Noise" if cid == -1 else f"Zone {cid + 1}",
+                "zone_type": "NOISE" if cid == -1 else zone_type,
                 "city": sub["city"].mode().iloc[0] if not sub["city"].mode().empty else sub["city"].iloc[0],
                 "country": sub["country"].mode().iloc[0] if not sub["country"].mode().empty else sub["country"].iloc[0],
                 "centroid_lat": round(sub["lat"].mean(), 5),
@@ -97,6 +129,9 @@ class GeoAnalyzer:
                 "likelihood_pct": likelihood,
                 "recency": round(recency, 3),
                 "freq": round(freq, 3),
+                "active_window": active_window,
+                "frequency": frequency,
+                "spark_data": spark,
             })
         return (
             pd.DataFrame(rows)

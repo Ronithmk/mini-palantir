@@ -2,7 +2,7 @@
 import streamlit as st
 import uuid
 from datetime import datetime
-from core.state import inject_theme, set_data, get_data
+from core.state import inject_theme, set_data, get_data, LIVE_CLOCK_HTML
 from core.geo import GeoAnalyzer
 from core.fetcher import IntelFetcher
 from core.clusterer import TextClusterer
@@ -21,9 +21,10 @@ inject_theme()
 with st.sidebar:
     st.markdown(
         '<div style="font-size:1.4rem;font-weight:700;letter-spacing:.08em;color:#58a6ff;">◈ MINI PALANTIR</div>'
-        '<div style="font-size:.65rem;color:#8b949e;letter-spacing:.12em;margin-bottom:16px;">INTELLIGENCE PLATFORM</div>',
+        '<div style="font-size:.65rem;color:#8b949e;letter-spacing:.12em;margin-bottom:12px;">INTELLIGENCE PLATFORM</div>',
         unsafe_allow_html=True,
     )
+    st.markdown(LIVE_CLOCK_HTML, unsafe_allow_html=True)
     st.markdown("---")
 
     d = get_data()
@@ -65,6 +66,24 @@ with col_form:
     query        = st.text_input("Intelligence Query", placeholder="e.g. cybersecurity India", key="inp_q")
     history_days = st.slider("Activity History (days)", 10, 90, 45)
     n_topics     = st.slider("Topic Clusters", 3, 10, 6)
+
+    # ── Sample IP presets ──────────────────────────────────────────────────────
+    st.markdown(
+        '<div style="font-size:.65rem;color:#8b949e;letter-spacing:.08em;margin:10px 0 6px;">SAMPLE TARGETS</div>',
+        unsafe_allow_html=True,
+    )
+    SAMPLE_IPS = [
+        ("8.8.8.8",      "Google DNS",   "badge-ip"),
+        ("1.1.1.1",      "Cloudflare",   "badge-loc"),
+        ("208.67.222.222","OpenDNS",     "badge-org"),
+        ("13.107.42.14",  "Microsoft",   "badge-zone"),
+    ]
+    chip_cols = st.columns(len(SAMPLE_IPS))
+    for col, (ip, label, badge_cls) in zip(chip_cols, SAMPLE_IPS):
+        with col:
+            if st.button(f"{ip}", key=f"chip_{ip}", help=label, use_container_width=True):
+                st.session_state["inp_ip"] = ip
+                st.rerun()
 
     launch = st.button("LAUNCH INVESTIGATION", type="primary", use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)

@@ -4,7 +4,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 import folium
 from streamlit_folium import st_folium
-from core.state import inject_theme, require_data, themed, MAPBOX
+from core.state import (inject_theme, require_data, themed, MAPBOX,
+                        ZONE_TYPE_FOLIUM, zone_type_badge, sparkline_svg)
 
 st.set_page_config(page_title="Geo Intelligence · Mini Palantir", page_icon="🗺️", layout="wide")
 inject_theme()
@@ -27,52 +28,80 @@ tab_map, tab_scatter, tab_zones, tab_anomaly = st.tabs([
     "Interactive Map", "Session Scatter", "Zone Analysis", "Anomalies"
 ])
 
+# ── Zone-type hex colours (for folium CircleMarker) ───────────────────────────
+_ZT_HEX = {"PRIMARY": "#00e5ff", "SECONDARY": "#ffd60a",
+            "TRANSIT": "#bf5af2", "NOISE": "#484f58"}
+
+# Map zone_label → zone_type for session dots
+def _label_to_zt(zone_label: str) -> str:
+    if zone_label == "Primary Zone":   return "PRIMARY"
+    if zone_label == "Secondary Zone": return "SECONDARY"
+    return "TRANSIT"
+
 # ── Build folium map once, cache in session ────────────────────────────────────
 if d["folium_map"] is None:
     center = [clust["lat"].mean(), clust["lon"].mean()]
     m = folium.Map(location=center, zoom_start=10, tiles="CartoDB dark_matter")
 
-    ZONE_COLORS = {"Primary Zone": "blue", "Secondary Zone": "orange",
-                   "Travel / Remote": "red", "Noise": "gray"}
+    valid_stats = stats[stats["cluster_id"] != -1]
 
-    # Cluster zone circles
-    for _, row in stats[stats["cluster_id"] != -1].iterrows():
+    # ── Zone centroid circles (Trackr-style coloured by zone type) ────────────
+    for _, row in valid_stats.iterrows():
+        zt     = row.get("zone_type", "TRANSIT")
+        zcolor = _ZT_HEX.get(zt, "#484f58")
+        fcolor = ZONE_TYPE_FOLIUM.get(zt, "gray")
         folium.CircleMarker(
             location=[row["centroid_lat"], row["centroid_lon"]],
             radius=max(10, min(50, row["sessions"] / 2.5)),
-            color="#58a6ff", fill=True, fill_opacity=0.35,
+            color=zcolor, fill=True, fill_color=zcolor, fill_opacity=0.30,
+            weight=2,
             popup=folium.Popup(
-                f"<b style='color:#58a6ff'>{row['label']}</b><br>"
+                f"<b style='color:{zcolor}'>{row['label']} [{zt}]</b><br>"
                 f"City: {row['city']}<br>"
                 f"Sessions: {row['sessions']}<br>"
                 f"Total: {row['total_hours']}h<br>"
                 f"Likelihood: <b>{row['likelihood_pct']}%</b><br>"
+                f"Active: {row.get('active_window','')}<br>"
+                f"Frequency: {row.get('frequency','')}<br>"
                 f"<small>{row['centroid_lat']}, {row['centroid_lon']}</small>",
-                max_width=230,
+                max_width=250,
             ),
-            tooltip=f"{row['label']} — {row['likelihood_pct']}% confidence",
+            tooltip=f"{row['label']} [{zt}] — {row['likelihood_pct']}% confidence",
         ).add_to(m)
 
-    # Session dots (fixed seed)
+    # ── Connection lines: each zone centroid → predicted location ─────────────
+    if pred:
+        for _, row in valid_stats.iterrows():
+            zt     = row.get("zone_type", "TRANSIT")
+            zcolor = _ZT_HEX.get(zt, "#484f58")
+            folium.PolyLine(
+                [[row["centroid_lat"], row["centroid_lon"]], [pred["lat"], pred["lon"]]],
+                color=zcolor, weight=1, opacity=0.40, dash_array="4 6",
+                tooltip=f"{row['label']} → Predicted location",
+            ).add_to(m)
+
+    # ── Session dots coloured by zone type ────────────────────────────────────
     sample = clust.sample(min(400, len(clust)), random_state=42)
     for _, row in sample.iterrows():
-        color = ZONE_COLORS.get(row["zone_label"], "gray")
+        zt     = _label_to_zt(row["zone_label"])
+        zcolor = _ZT_HEX.get(zt, "#484f58")
         folium.CircleMarker(
             location=[row["lat"], row["lon"]],
-            radius=2.5, color=color, fill=True, fill_opacity=0.5,
+            radius=2.5, color=zcolor, fill=True, fill_color=zcolor, fill_opacity=0.55,
+            weight=0,
             tooltip=f"{row['zone_label']} · {row['duration_min']}min",
         ).add_to(m)
 
-    # Movement trail (last 20 sessions chronologically)
+    # ── Movement trail (last 20 sessions) ─────────────────────────────────────
     trail = clust.sort_values("timestamp").tail(20)
     trail_coords = trail[["lat", "lon"]].values.tolist()
     if len(trail_coords) > 1:
         folium.PolyLine(
-            trail_coords, color="#d29922", weight=2, opacity=0.7, dash_array="5 5",
+            trail_coords, color="#ffd60a", weight=2, opacity=0.75, dash_array="5 5",
             tooltip="Recent movement trail",
         ).add_to(m)
 
-    # Anomaly markers
+    # ── Anomaly markers ───────────────────────────────────────────────────────
     anoms = anomdf[anomdf["anomaly"]].head(30)
     for _, row in anoms.iterrows():
         folium.CircleMarker(
@@ -81,7 +110,7 @@ if d["folium_map"] is None:
             tooltip=f"⚠ Anomaly: {row['anomaly_reason'].strip()}",
         ).add_to(m)
 
-    # Predicted location
+    # ── Predicted location marker ─────────────────────────────────────────────
     if pred:
         folium.Marker(
             location=[pred["lat"], pred["lon"]],
@@ -90,17 +119,17 @@ if d["folium_map"] is None:
             icon=folium.Icon(color="green", icon="home", prefix="fa"),
         ).add_to(m)
 
-    # Legend
+    # ── Legend ────────────────────────────────────────────────────────────────
     legend = """
     <div style='position:fixed;bottom:30px;left:30px;z-index:9999;
          background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px;
          font-family:monospace;font-size:11px;color:#e6edf3;'>
     <b style='color:#58a6ff;'>LEGEND</b><br>
-    <span style='color:#58a6ff'>●</span> Zone centroid<br>
-    <span style='color:blue'>●</span> Primary zone session<br>
-    <span style='color:orange'>●</span> Secondary zone<br>
-    <span style='color:red'>●</span> Remote / anomaly<br>
-    <span style='color:#d29922'>- -</span> Movement trail<br>
+    <span style='color:#00e5ff'>●</span> PRIMARY zone<br>
+    <span style='color:#ffd60a'>●</span> SECONDARY zone<br>
+    <span style='color:#bf5af2'>●</span> TRANSIT zone<br>
+    <span style='color:#f85149'>●</span> Anomaly<br>
+    <span style='color:#ffd60a'>- -</span> Movement trail<br>
     <span style='color:#3fb950'>⌂</span> Predicted location
     </div>
     """
@@ -115,19 +144,44 @@ with tab_map:
     with col_zinfo:
         st.markdown('<div class="section-hdr">Zone Summary</div>', unsafe_allow_html=True)
         for _, row in stats[stats["cluster_id"] != -1].iterrows():
-            bar_w = int(row["likelihood_pct"])
-            rc    = "#3fb950" if row["likelihood_pct"] > 60 else "#d29922" if row["likelihood_pct"] > 30 else "#f85149"
+            zt      = row.get("zone_type", "TRANSIT")
+            zcolor  = _ZT_HEX.get(zt, "#484f58")
+            bar_w   = int(row["likelihood_pct"])
+            spark   = row.get("spark_data", [])
+            svg     = sparkline_svg(spark, width=96, height=22, color=zcolor)
+            aw      = row.get("active_window", "")
+            freq    = row.get("frequency", "")
+            fs      = row.get("first_seen", "")
+            ls      = row.get("last_seen", "")
             st.markdown(
-                f'<div class="pal-card" style="padding:10px 14px;margin-bottom:8px;">'
-                f'<b style="color:#58a6ff">{row["label"]}</b><br>'
-                f'<span style="font-size:.75rem;color:#8b949e">{row["city"]}</span><br>'
-                f'<span style="font-family:monospace;font-size:.7rem;color:#484f58">'
-                f'{row["centroid_lat"]}, {row["centroid_lon"]}</span><br>'
-                f'<div style="margin-top:6px;">'
-                f'<div class="risk-bar-bg"><div class="risk-bar" style="width:{bar_w}%;background:{rc}"></div></div>'
+                f'<div class="pal-card" style="padding:10px 14px;margin-bottom:8px;'
+                f'border-left:3px solid {zcolor};">'
+                # Header row: label + zone_type_badge + sparkline
+                f'<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">'
+                f'<b style="color:{zcolor};flex:1">{row["label"]}</b>'
+                f'{zone_type_badge(zt)}'
                 f'</div>'
-                f'<span style="font-size:.7rem;color:{rc}"><b>{row["likelihood_pct"]}%</b></span>'
-                f' <span style="font-size:.7rem;color:#8b949e">· {row["sessions"]} sessions · {row["total_hours"]}h</span>'
+                # Sparkline
+                f'<div style="margin:4px 0 6px;">{svg}</div>'
+                # City + coords
+                f'<div style="font-size:.72rem;color:#8b949e;">{row["city"]}</div>'
+                f'<div style="font-family:monospace;font-size:.67rem;color:#484f58;margin-bottom:5px;">'
+                f'{row["centroid_lat"]}, {row["centroid_lon"]}</div>'
+                # Likelihood bar
+                f'<div class="risk-bar-bg"><div class="risk-bar" '
+                f'style="width:{bar_w}%;background:{zcolor}"></div></div>'
+                f'<div style="display:flex;justify-content:space-between;font-size:.68rem;margin-top:3px;">'
+                f'<span style="color:{zcolor}"><b>{row["likelihood_pct"]}%</b> likelihood</span>'
+                f'<span style="color:#8b949e">{row["sessions"]} sess</span>'
+                f'</div>'
+                # Active window + frequency
+                f'<div style="font-size:.67rem;color:#8b949e;margin-top:5px;">'
+                f'<span style="color:#484f58">ACTIVE</span> {aw}</div>'
+                f'<div style="font-size:.67rem;color:#8b949e;">'
+                f'<span style="color:#484f58">FREQ</span> {freq} &nbsp;·&nbsp; {row["total_hours"]}h total</div>'
+                # First / last seen
+                f'<div style="font-size:.63rem;color:#484f58;margin-top:4px;">'
+                f'First {fs}<br>Last &nbsp;{ls}</div>'
                 f'</div>',
                 unsafe_allow_html=True,
             )

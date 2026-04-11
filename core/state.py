@@ -194,3 +194,116 @@ def risk_color(score: int) -> str:
     if score >= 40:
         return "#d29922"
     return "#3fb950"
+
+
+# ── Zone type colours (Trackr-style) ──────────────────────────────────────────
+ZONE_TYPE_COLOR = {
+    "PRIMARY":   "#00e5ff",
+    "SECONDARY": "#ffd60a",
+    "TRANSIT":   "#bf5af2",
+    "NOISE":     "#484f58",
+}
+ZONE_TYPE_FOLIUM = {
+    "PRIMARY":   "blue",
+    "SECONDARY": "orange",
+    "TRANSIT":   "purple",
+    "NOISE":     "gray",
+}
+
+
+def zone_type_badge(zone_type: str) -> str:
+    colors = {
+        "PRIMARY":   ("rgba(0,229,255,0.15)",   "#00e5ff"),
+        "SECONDARY": ("rgba(255,214,10,0.15)",  "#ffd60a"),
+        "TRANSIT":   ("rgba(191,90,242,0.15)",  "#bf5af2"),
+        "NOISE":     ("rgba(72,79,88,0.15)",    "#484f58"),
+    }
+    bg, fg = colors.get(zone_type, ("rgba(72,79,88,0.15)", "#484f58"))
+    return (
+        f'<span style="background:{bg};color:{fg};padding:2px 8px;border-radius:10px;'
+        f'font-size:.6rem;font-weight:700;letter-spacing:.1em;border:1px solid {fg}40">'
+        f'{zone_type}</span>'
+    )
+
+
+def sparkline_svg(values: list, width: int = 96, height: int = 24,
+                  color: str = "#00e5ff") -> str:
+    """Render a 24-bin hourly sparkline as inline SVG (Trackr-style)."""
+    if not values or max(values) == 0:
+        return f'<svg width="{width}" height="{height}"></svg>'
+    max_v = max(values)
+    n     = len(values)
+    bw    = width / n
+    bars  = ""
+    for i, v in enumerate(values):
+        h   = max(1, int(v / max_v * height))
+        y   = height - h
+        x   = i * bw
+        op  = 0.25 + 0.75 * (v / max_v)
+        bars += (
+            f'<rect x="{x:.1f}" y="{y}" width="{max(1, bw - 0.8):.1f}" '
+            f'height="{h}" fill="{color}" opacity="{op:.2f}" rx="1"/>'
+        )
+    return f'<svg width="{width}" height="{height}" xmlns="http://www.w3.org/2000/svg">{bars}</svg>'
+
+
+# ── Live clock JS (IST) ───────────────────────────────────────────────────────
+LIVE_CLOCK_HTML = """
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+  <span style="width:8px;height:8px;border-radius:50%;background:#00ff88;
+        box-shadow:0 0 8px #00ff88;display:inline-block;
+        animation:blink 1.4s ease-in-out infinite;"></span>
+  <span style="font-size:.65rem;color:#00ff88;letter-spacing:.1em;font-weight:700">LIVE</span>
+  <span id="pal-clock" style="font-size:.65rem;color:#00e5ff;letter-spacing:.08em;
+        font-family:monospace;margin-left:4px;"></span>
+</div>
+<style>
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+</style>
+<script>
+(function(){
+  function tick(){
+    var now = new Date();
+    var ist = new Date(now.getTime() + (5.5*3600000));
+    var s = ist.toISOString().replace('T',' ').substring(0,19)+' IST';
+    var el = document.getElementById('pal-clock');
+    if(el) el.textContent = s;
+  }
+  tick(); setInterval(tick,1000);
+})();
+</script>
+"""
+
+
+# ── Loading overlay HTML ───────────────────────────────────────────────────────
+LOADING_OVERLAY_HTML = """
+<div id="pal-loading" style="
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(3,13,18,0.93);z-index:9999;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:monospace;">
+  <div style="width:44px;height:44px;border:2px solid #0d2a35;
+       border-top:2px solid #00e5ff;border-radius:50%;
+       animation:spin 0.9s linear infinite;"></div>
+  <div id="pal-load-msg" style="color:#00e5ff;font-size:.75rem;letter-spacing:.12em;
+       margin-top:20px;"></div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+<script>
+(function(){
+  var msgs = [
+    "PARSING BEHAVIORAL LOGS",
+    "RESOLVING GEOLOCATION",
+    "CLUSTERING SESSION DATA",
+    "BUILDING ENTITY GRAPH",
+    "RUNNING PREDICTIVE MODELS",
+    "COMPILING INTELLIGENCE FEED",
+    "FINALISING REPORT"
+  ];
+  var i=0;
+  var el=document.getElementById('pal-load-msg');
+  if(el){ el.textContent=msgs[0]; setInterval(function(){ i=(i+1)%msgs.length; el.textContent=msgs[i]; },400); }
+  setTimeout(function(){ var ov=document.getElementById('pal-loading'); if(ov) ov.style.display='none'; },2000);
+})();
+</script>
+"""
