@@ -58,7 +58,7 @@ report_md = f"""
 
 ### 1. EXECUTIVE SUMMARY
 
-This report presents findings from a geospatial and open-source intelligence analysis of target IP **{d['target_ip']}**, conducted on **{now_str}**. The analysis ingested {len(adf)} simulated activity sessions over {adf['date'].nunique()} days and {len(wdf)} items from open-source intelligence feeds.
+This report presents findings from a geospatial and open-source intelligence analysis of target IP **{d['target_ip']}**, conducted on **{now_str}**. The analysis ingested {len(adf)} simulated activity sessions over {adf['timestamp'].dt.date.nunique()} days and {len(wdf)} items from open-source intelligence feeds.
 
 **Risk Assessment: {rk_label} ({risk}/100)**
 
