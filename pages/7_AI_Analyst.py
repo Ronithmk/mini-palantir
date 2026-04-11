@@ -13,12 +13,9 @@ inject_theme()
 d = require_data()
 
 st.markdown(
-    '<div style="font-size:1.5rem;font-weight:700;color:#58a6ff;margin-bottom:2px;">🤖 ARIA — AI ANALYST</div>'
-    '<div style="font-size:.75rem;color:#8b949e;margin-bottom:4px;">'
-    'Advanced Reasoning Intelligence Analyst · Powered by Claude · Goes beyond Palantir</div>'
-    '<div style="font-size:.7rem;color:#484f58;margin-bottom:20px;">'
-    'ARIA proactively surfaces insights, generates hypotheses, predicts behavior, and '
-    'identifies counter-intelligence signals — automatically.</div>',
+    '<div style="font-size:1.1rem;font-weight:600;color:#d4dce8;margin-bottom:3px;">ARIA — AI Analyst</div>'
+    '<div style="font-size:.75rem;color:#6b7685;margin-bottom:18px;">'
+    'Advanced Reasoning Intelligence Analyst · Powered by Claude</div>',
     unsafe_allow_html=True,
 )
 
@@ -49,17 +46,13 @@ with st.sidebar:
         "What is the threat level of this target?",
         "Where is this person most likely right now?",
         "What is unusual about this behavior?",
-        "Generate 3 hypotheses for the anomalies",
         "What should I investigate next?",
-        "Is there any counter-intelligence awareness?",
-        "Write a one-paragraph executive brief",
-        "What does the behavioral pattern tell us?",
     ]
     for q in quick_qs:
         if st.button(q, key=f"qbtn_{q[:20]}", use_container_width=True):
             st.session_state["aria_inject"] = q
 
-api_key = st.session_state.get("aria_api_key", "")
+api_key = st.session_state.get("aria_api_key", api_key if "api_key" in dir() else "")
 
 if not api_key:
     st.markdown(

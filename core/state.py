@@ -4,28 +4,29 @@ import streamlit as st
 # ── Palantir-style dark theme CSS ─────────────────────────────────────────────
 THEME_CSS = """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-    --bg0:  #0d1117;
-    --bg1:  #161b22;
-    --bg2:  #21262d;
-    --bg3:  #30363d;
-    --acc:  #58a6ff;
-    --grn:  #3fb950;
-    --red:  #f85149;
-    --org:  #d29922;
-    --pur:  #bc8cff;
-    --txt0: #e6edf3;
-    --txt1: #8b949e;
-    --txt2: #484f58;
+    --bg0:  #0b0f14;
+    --bg1:  #111827;
+    --bg2:  #1c2333;
+    --bg3:  #2d3748;
+    --acc:  #4d9de0;
+    --grn:  #2ea043;
+    --red:  #e05050;
+    --org:  #c09000;
+    --txt0: #d4dce8;
+    --txt1: #6b7685;
+    --txt2: #2d3748;
+    --r4:   4px;
 }
 
 /* ── Layout ── */
-.stApp { background: var(--bg0) !important; color: var(--txt0) !important; }
+.stApp { background: var(--bg0) !important; color: var(--txt0) !important;
+         font-family: 'Inter', sans-serif !important; }
 section[data-testid="stSidebar"] {
     background: var(--bg1) !important;
-    border-right: 1px solid var(--bg3) !important;
+    border-right: 1px solid var(--bg2) !important;
 }
 section[data-testid="stSidebar"] * { color: var(--txt0) !important; }
 div[data-testid="stAppViewContainer"] { background: var(--bg0) !important; }
@@ -33,102 +34,149 @@ div[data-testid="stAppViewContainer"] { background: var(--bg0) !important; }
 /* ── Cards ── */
 .pal-card {
     background: var(--bg1);
-    border: 1px solid var(--bg3);
-    border-radius: 8px;
-    padding: 16px 20px;
-    margin-bottom: 12px;
+    border: 1px solid var(--bg2);
+    border-radius: var(--r4);
+    padding: 14px 18px;
+    margin-bottom: 10px;
 }
-.pal-card-accent  { border-left: 3px solid var(--acc); }
-.pal-card-green   { border-left: 3px solid var(--grn); }
-.pal-card-red     { border-left: 3px solid var(--red); }
-.pal-card-orange  { border-left: 3px solid var(--org); }
+.pal-card-accent  { border-top: 2px solid var(--acc); }
+.pal-card-green   { border-top: 2px solid var(--grn); }
+.pal-card-red     { border-top: 2px solid var(--red); }
+.pal-card-orange  { border-top: 2px solid var(--org); }
 
 /* ── Metric tiles ── */
 .pal-metric {
     background: var(--bg1);
-    border: 1px solid var(--bg3);
-    border-radius: 8px;
-    padding: 14px 18px;
+    border: 1px solid var(--bg2);
+    border-radius: var(--r4);
+    padding: 12px 14px;
     text-align: center;
-    position: relative;
 }
-.pal-metric .val  { font-size: 2rem; font-weight: 700; color: var(--acc); line-height: 1.1; }
-.pal-metric .lbl  { font-size: 0.65rem; color: var(--txt1); text-transform: uppercase; letter-spacing: .08em; margin-top: 4px; }
-.pal-metric .sub  { font-size: 0.7rem; color: var(--txt1); margin-top: 2px; }
+.pal-metric .val  { font-size: 1.7rem; font-weight: 600; color: var(--acc); line-height: 1.2; }
+.pal-metric .lbl  { font-size: 0.68rem; color: var(--txt1); margin-top: 3px; }
+.pal-metric .sub  { font-size: 0.65rem; color: var(--txt1); }
 
 /* ── Badges ── */
 .badge {
-    display: inline-block; padding: 2px 8px; border-radius: 12px;
-    font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+    display: inline-block; padding: 1px 7px; border-radius: var(--r4);
+    font-size: 0.65rem; font-weight: 500; letter-spacing: .02em;
 }
-.badge-ip   { background:#1f3a5f; color:#58a6ff; }
-.badge-loc  { background:#1f3a2e; color:#3fb950; }
-.badge-org  { background:#3a1f5f; color:#bc8cff; }
-.badge-zone { background:#3a2a1f; color:#d29922; }
-.badge-news { background:#2a2a2a; color:#8b949e; }
-.badge-reddit { background:#3a1f1f; color:#ff6314; }
-.badge-wiki { background:#1f2f3a; color:#79c0ff; }
-.badge-threat { background:#3a1f1f; color:#f85149; }
-.badge-safe { background:#1f3a2e; color:#3fb950; }
+.badge-ip     { background: rgba(77,157,224,0.12); color: var(--acc); }
+.badge-loc    { background: rgba(46,160,67,0.12);  color: #4db868; }
+.badge-org    { background: rgba(110,118,129,0.10); color: var(--txt1); }
+.badge-zone   { background: rgba(192,144,0,0.12);  color: #d4a837; }
+.badge-news   { background: rgba(110,118,129,0.08); color: var(--txt1); }
+.badge-reddit { background: rgba(200,80,30,0.10);  color: #e07040; }
+.badge-wiki   { background: rgba(77,157,224,0.08); color: #7ab0e0; }
+.badge-threat { background: rgba(224,80,80,0.12);  color: var(--red); }
+.badge-safe   { background: rgba(46,160,67,0.12);  color: #4db868; }
 
 /* ── Section headers ── */
 .section-hdr {
-    font-size: .65rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .12em; color: var(--txt1);
-    border-bottom: 1px solid var(--bg3); padding-bottom: 4px; margin: 16px 0 8px;
+    font-size: .7rem; color: var(--txt1); font-weight: 500;
+    padding-bottom: 5px; border-bottom: 1px solid var(--bg2);
+    margin: 14px 0 8px;
 }
 
 /* ── Entity rows ── */
 .entity-row {
-    display: flex; align-items: center; gap: 10px;
-    padding: 7px 12px; border-bottom: 1px solid var(--bg2);
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 0; border-bottom: 1px solid var(--bg2);
     font-size: .82rem; color: var(--txt0);
 }
-.entity-row:hover { background: var(--bg2); }
 
 /* ── Status dots ── */
-.dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
-.dot-live  { background:var(--grn); box-shadow:0 0 6px var(--grn); }
-.dot-warn  { background:var(--org); box-shadow:0 0 6px var(--org); }
-.dot-dead  { background:var(--txt2); }
-.dot-alert { background:var(--red); box-shadow:0 0 6px var(--red); }
+.dot { display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:5px; flex-shrink:0; }
+.dot-live  { background: var(--grn); }
+.dot-warn  { background: var(--org); }
+.dot-dead  { background: var(--txt1); }
+.dot-alert { background: var(--red); }
 
 /* ── Risk bar ── */
-.risk-bar-bg { background:var(--bg3); border-radius:4px; height:8px; width:100%; }
-.risk-bar    { border-radius:4px; height:8px; }
+.risk-bar-bg { background: var(--bg3); border-radius: 2px; height: 4px; width: 100%; }
+.risk-bar    { border-radius: 2px; height: 4px; }
 
 /* ── Timeline event ── */
 .tl-event {
     display:flex; gap:12px; padding:8px 0;
     border-bottom:1px solid var(--bg2); font-size:.82rem;
 }
-.tl-time  { color:var(--txt1); min-width:100px; font-family:monospace; }
-.tl-body  { color:var(--txt0); flex:1; }
+.tl-time  { color: var(--txt1); min-width:100px; font-family: 'JetBrains Mono', monospace; }
+.tl-body  { color: var(--txt0); flex:1; }
 .tl-badge { align-self:flex-start; }
 
-/* ── Override Streamlit widget colours ── */
-div[data-testid="stMetricValue"]  { color:var(--acc) !important; }
+/* ── Streamlit overrides ── */
+div[data-testid="stMetricValue"]  { color: var(--acc) !important; }
+
+/* Ghost buttons by default */
 .stButton > button {
-    background:var(--acc) !important; color:#0d1117 !important;
-    border:none !important; font-weight:700 !important; border-radius:6px !important;
-    letter-spacing:.04em;
+    background: transparent !important;
+    border: 1px solid var(--bg3) !important;
+    color: var(--txt0) !important;
+    border-radius: var(--r4) !important;
+    font-size: .8rem !important;
+    font-weight: 400 !important;
+    letter-spacing: 0 !important;
+    padding: 4px 12px !important;
+    transition: border-color .15s, color .15s !important;
 }
-.stButton > button:hover { background:#79c0ff !important; }
-div[data-testid="stTabs"] button { color:var(--txt1) !important; }
-div[data-testid="stTabs"] button[aria-selected="true"] { color:var(--acc) !important; border-bottom-color:var(--acc) !important; }
+.stButton > button:hover {
+    border-color: var(--acc) !important;
+    color: var(--acc) !important;
+    background: rgba(77,157,224,0.06) !important;
+}
+
+/* Primary action buttons */
+div[data-testid="stMainBlockContainer"] .stButton > button[kind="primaryFormSubmit"],
+div[data-testid="stMainBlockContainer"] .stButton > button[kind="primary"] {
+    background: var(--acc) !important;
+    border-color: var(--acc) !important;
+    color: #0b0f14 !important;
+    font-weight: 600 !important;
+}
+div[data-testid="stMainBlockContainer"] .stButton > button[kind="primary"]:hover {
+    background: #6ab3e8 !important;
+    border-color: #6ab3e8 !important;
+    color: #0b0f14 !important;
+}
+
+div[data-testid="stTabs"] button { color: var(--txt1) !important; font-size: .82rem !important; }
+div[data-testid="stTabs"] button[aria-selected="true"] {
+    color: var(--txt0) !important;
+    border-bottom-color: var(--acc) !important;
+}
+
+/* Input fields */
+div[data-testid="stTextInput"] input,
+div[data-testid="stTextArea"] textarea {
+    background: var(--bg2) !important;
+    border-color: var(--bg3) !important;
+    color: var(--txt0) !important;
+    border-radius: var(--r4) !important;
+}
+div[data-testid="stSelectbox"] > div {
+    background: var(--bg2) !important;
+    border-color: var(--bg3) !important;
+}
+
+/* Dataframes */
+div[data-testid="stDataFrame"] { border: 1px solid var(--bg2) !important; border-radius: var(--r4) !important; }
+
+/* Expander */
+div[data-testid="stExpander"] { border: 1px solid var(--bg2) !important; border-radius: var(--r4) !important; }
 </style>
 """
 
 # ── Plotly base layout ─────────────────────────────────────────────────────────
 PLOTLY_BASE = dict(
-    paper_bgcolor="#0d1117",
-    plot_bgcolor="#0d1117",
-    font=dict(color="#e6edf3", family="JetBrains Mono, monospace", size=11),
-    xaxis=dict(gridcolor="#21262d", zerolinecolor="#30363d", linecolor="#30363d"),
-    yaxis=dict(gridcolor="#21262d", zerolinecolor="#30363d", linecolor="#30363d"),
-    legend=dict(bgcolor="#161b22", bordercolor="#30363d", borderwidth=1, font=dict(size=10)),
-    margin=dict(l=48, r=16, t=48, b=40),
-    hoverlabel=dict(bgcolor="#161b22", bordercolor="#30363d", font=dict(color="#e6edf3")),
+    paper_bgcolor="#0b0f14",
+    plot_bgcolor="#0b0f14",
+    font=dict(color="#d4dce8", family="Inter, sans-serif", size=11),
+    xaxis=dict(gridcolor="#1c2333", zerolinecolor="#2d3748", linecolor="#2d3748"),
+    yaxis=dict(gridcolor="#1c2333", zerolinecolor="#2d3748", linecolor="#2d3748"),
+    legend=dict(bgcolor="#111827", bordercolor="#2d3748", borderwidth=1, font=dict(size=10)),
+    margin=dict(l=48, r=16, t=44, b=40),
+    hoverlabel=dict(bgcolor="#111827", bordercolor="#2d3748", font=dict(color="#d4dce8")),
 )
 
 MAPBOX = "carto-darkmatter"

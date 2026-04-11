@@ -20,8 +20,8 @@ inject_theme()
 # ── Sidebar ────────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown(
-        '<div style="font-size:1.4rem;font-weight:700;letter-spacing:.08em;color:#58a6ff;">◈ MINI PALANTIR</div>'
-        '<div style="font-size:.65rem;color:#8b949e;letter-spacing:.12em;margin-bottom:12px;">INTELLIGENCE PLATFORM</div>',
+        '<div style="font-size:1rem;font-weight:600;color:#4d9de0;margin-bottom:2px;">Mini Palantir</div>'
+        '<div style="font-size:.68rem;color:#6b7685;margin-bottom:10px;">Intelligence Platform</div>',
         unsafe_allow_html=True,
     )
     st.markdown(LIVE_CLOCK_HTML, unsafe_allow_html=True)
@@ -29,63 +29,72 @@ with st.sidebar:
 
     d = get_data()
     if d:
-        rc = "#f85149" if d["risk_score"] >= 70 else "#d29922" if d["risk_score"] >= 40 else "#3fb950"
+        rc = "#e05050" if d["risk_score"] >= 70 else "#c09000" if d["risk_score"] >= 40 else "#2ea043"
         st.markdown(
-            f'<div class="pal-card pal-card-accent">'
-            f'<div style="font-size:.65rem;color:#8b949e;letter-spacing:.1em;">ACTIVE INVESTIGATION</div>'
-            f'<div style="font-size:1rem;font-weight:700;color:#e6edf3;margin-top:4px;">{d["target_ip"]}</div>'
-            f'<div style="font-size:.7rem;color:#8b949e;">{d["case_id"]}</div>'
-            f'<div style="font-size:.75rem;margin-top:6px;">Risk: <b style="color:{rc}">{d["risk_score"]}/100</b></div>'
+            f'<div class="pal-card pal-card-accent" style="padding:10px 14px;">'
+            f'<div style="font-size:.65rem;color:#6b7685;">Active Investigation</div>'
+            f'<div style="font-size:.9rem;font-weight:600;color:#d4dce8;margin-top:2px;">{d["target_ip"]}</div>'
+            f'<div style="font-size:.68rem;color:#6b7685;">{d["case_id"]}</div>'
+            f'<div style="font-size:.72rem;margin-top:5px;">Risk: <span style="color:{rc};font-weight:600">{d["risk_score"]}/100</span></div>'
             f'</div>',
             unsafe_allow_html=True,
         )
-        st.markdown("**Navigate:**")
-        st.page_link("pages/1_Overview.py",         label="Overview",        icon="📊")
-        st.page_link("pages/2_Geo_Intelligence.py", label="Geo Intelligence", icon="🗺️")
-        st.page_link("pages/3_Link_Analysis.py",    label="Link Analysis",   icon="🕸️")
-        st.page_link("pages/4_Pattern_of_Life.py",  label="Pattern of Life", icon="📅")
-        st.page_link("pages/5_Intel_Feed.py",       label="Intel Feed",      icon="🌐")
-        st.page_link("pages/6_Report.py",           label="Report",          icon="📋")
+        st.page_link("pages/1_Overview.py",         label="Overview",        icon="◎")
+        st.page_link("pages/2_Geo_Intelligence.py", label="Geo Intelligence", icon="◉")
+        st.page_link("pages/3_Link_Analysis.py",    label="Link Analysis",   icon="◈")
+        st.page_link("pages/4_Pattern_of_Life.py",  label="Pattern of Life", icon="◐")
+        st.page_link("pages/5_Intel_Feed.py",       label="Intel Feed",      icon="◑")
+        st.page_link("pages/6_Report.py",           label="Report",          icon="◷")
     st.markdown("---")
-    st.caption("Free APIs · No keys required")
+    st.caption("Free APIs · No key required")
 
 # ── Home content ───────────────────────────────────────────────────────────────
 st.markdown(
-    '<div style="font-size:2rem;font-weight:700;letter-spacing:.06em;color:#58a6ff;">◈ MINI PALANTIR</div>'
-    '<div style="font-size:.8rem;color:#8b949e;letter-spacing:.1em;margin-bottom:24px;">'
-    'GEOSPATIAL INTELLIGENCE  ·  LINK ANALYSIS  ·  PATTERN OF LIFE  ·  ENTITY GRAPH</div>',
+    '<div style="font-size:1.6rem;font-weight:600;color:#4d9de0;margin-bottom:4px;">Mini Palantir</div>'
+    '<div style="font-size:.78rem;color:#6b7685;margin-bottom:24px;">'
+    'Geospatial intelligence · Link analysis · Pattern of life · Entity graph</div>',
     unsafe_allow_html=True,
 )
 
 col_form, col_info = st.columns([1, 1], gap="large")
 
+# Handle preset chip selection (pre-fill before widget renders)
+if "prefill_ip" in st.session_state:
+    _prefill = st.session_state.pop("prefill_ip")
+else:
+    _prefill = ""
+
 with col_form:
     st.markdown('<div class="pal-card pal-card-accent">', unsafe_allow_html=True)
-    st.markdown("### New Investigation")
-    target_ip    = st.text_input("Target IP Address", placeholder="e.g. 8.8.8.8", key="inp_ip")
+    st.markdown(
+        '<div style="font-size:.9rem;font-weight:600;color:#d4dce8;margin-bottom:12px;">New Investigation</div>',
+        unsafe_allow_html=True,
+    )
+    target_ip    = st.text_input("Target IP Address", value=_prefill, placeholder="e.g. 8.8.8.8", key="inp_ip")
     query        = st.text_input("Intelligence Query", placeholder="e.g. cybersecurity India", key="inp_q")
     history_days = st.slider("Activity History (days)", 10, 90, 45)
     n_topics     = st.slider("Topic Clusters", 3, 10, 6)
 
     # ── Sample IP presets ──────────────────────────────────────────────────────
     st.markdown(
-        '<div style="font-size:.65rem;color:#8b949e;letter-spacing:.08em;margin:10px 0 6px;">SAMPLE TARGETS</div>',
+        '<div style="font-size:.68rem;color:#6b7685;margin:10px 0 5px;">Sample targets</div>',
         unsafe_allow_html=True,
     )
     SAMPLE_IPS = [
-        ("8.8.8.8",      "Google DNS",   "badge-ip"),
-        ("1.1.1.1",      "Cloudflare",   "badge-loc"),
-        ("208.67.222.222","OpenDNS",     "badge-org"),
-        ("13.107.42.14",  "Microsoft",   "badge-zone"),
+        ("8.8.8.8",       "Google DNS"),
+        ("1.1.1.1",       "Cloudflare"),
+        ("208.67.222.222","OpenDNS"),
+        ("13.107.42.14",  "Microsoft"),
     ]
     chip_cols = st.columns(len(SAMPLE_IPS))
-    for col, (ip, label, badge_cls) in zip(chip_cols, SAMPLE_IPS):
+    for col, (ip, label) in zip(chip_cols, SAMPLE_IPS):
         with col:
-            if st.button(f"{ip}", key=f"chip_{ip}", help=label, use_container_width=True):
-                st.session_state["inp_ip"] = ip
+            if st.button(label, key=f"chip_{ip}", help=ip, use_container_width=True):
+                st.session_state["prefill_ip"] = ip
                 st.rerun()
 
-    launch = st.button("LAUNCH INVESTIGATION", type="primary", use_container_width=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    launch = st.button("Launch Investigation", type="primary", use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
     if launch:
@@ -156,22 +165,13 @@ with col_info:
         """
         <div class="pal-card">
         <div class="section-hdr">Capabilities</div>
-        <div class="entity-row"><span class="badge badge-loc">GEO</span> Geospatial activity clustering — DBSCAN zones with lat/long centroids</div>
-        <div class="entity-row"><span class="badge badge-ip">IP</span> IP lookup + ISP/org attribution via ip-api.com</div>
-        <div class="entity-row"><span class="badge badge-org">GRAPH</span> Entity relationship link chart — IP, location, org, topics</div>
-        <div class="entity-row"><span class="badge badge-zone">PATTERN</span> Pattern-of-life analysis — heatmap, anomaly detection, behavioural profile</div>
-        <div class="entity-row"><span class="badge badge-wiki">INTEL</span> Multi-source web intelligence — Wikipedia, Reddit, Google News, DuckDuckGo</div>
+        <div class="entity-row"><span class="badge badge-ip">GEO</span> Geospatial DBSCAN clustering — activity zones with lat/lon centroids</div>
+        <div class="entity-row"><span class="badge badge-ip">IP</span> IP lookup · ISP/org attribution via ip-api.com</div>
+        <div class="entity-row"><span class="badge badge-org">GRAPH</span> Entity relationship chart — IP, location, org, topics</div>
+        <div class="entity-row"><span class="badge badge-zone">PATTERN</span> Heatmap · anomaly detection · behavioural profile</div>
+        <div class="entity-row"><span class="badge badge-org">INTEL</span> Wikipedia · Reddit · Google News · DuckDuckGo</div>
         <div class="entity-row"><span class="badge badge-threat">RISK</span> Automated risk scoring with factor breakdown</div>
-        <div class="entity-row"><span class="badge badge-news">REPORT</span> Auto-generated intelligence report</div>
-        </div>
-
-        <div class="pal-card" style="margin-top:12px;">
-        <div class="section-hdr">Data Sources</div>
-        <div class="entity-row">🌐 <b>ip-api.com</b> — IP geolocation (free, no key)</div>
-        <div class="entity-row">📖 <b>Wikipedia REST API</b> — encyclopedic context (free)</div>
-        <div class="entity-row">💬 <b>Reddit JSON API</b> — social signals (free)</div>
-        <div class="entity-row">📰 <b>Google News RSS</b> — live news feed (free)</div>
-        <div class="entity-row">🔍 <b>DuckDuckGo Instant</b> — web summaries (free)</div>
+        <div class="entity-row"><span class="badge badge-org">AI</span> ARIA — Claude-powered analyst (Anthropic API key required)</div>
         </div>
         """,
         unsafe_allow_html=True,

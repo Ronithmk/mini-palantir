@@ -28,9 +28,9 @@ stats  = d["cluster_stats"]
 bg     = d["base_geo"]
 
 st.markdown(
-    '<div style="font-size:1.5rem;font-weight:700;color:#58a6ff;margin-bottom:2px;">🔮 PREDICTIVE INTELLIGENCE</div>'
-    '<div style="font-size:.75rem;color:#8b949e;margin-bottom:20px;">'
-    'Beyond Palantir: forecasting future behavior, detecting drift, and counter-intelligence signals</div>',
+    '<div style="font-size:1.1rem;font-weight:600;color:#d4dce8;margin-bottom:3px;">Predictive Intelligence</div>'
+    '<div style="font-size:.75rem;color:#6b7685;margin-bottom:18px;">'
+    'Behavior forecast · Drift detection · Counter-intelligence signals</div>',
     unsafe_allow_html=True,
 )
 

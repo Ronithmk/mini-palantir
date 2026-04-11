@@ -15,9 +15,9 @@ G: nx.Graph = d["graph"]
 ents = d["entities"]
 
 st.markdown(
-    '<div style="font-size:1.5rem;font-weight:700;color:#58a6ff;margin-bottom:4px;">🕸️ LINK ANALYSIS</div>'
-    f'<div style="font-size:.75rem;color:#8b949e;margin-bottom:20px;">'
-    f'{G.number_of_nodes()} nodes · {G.number_of_edges()} edges · Target: {d["target_ip"]}</div>',
+    f'<div style="font-size:1.1rem;font-weight:600;color:#d4dce8;margin-bottom:3px;">Link Analysis</div>'
+    f'<div style="font-size:.75rem;color:#6b7685;margin-bottom:18px;">'
+    f'{G.number_of_nodes()} nodes · {G.number_of_edges()} edges · {d["target_ip"]}</div>',
     unsafe_allow_html=True,
 )
 

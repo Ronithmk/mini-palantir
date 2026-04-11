@@ -18,9 +18,9 @@ adf["month"]  = adf["timestamp"].dt.strftime("%b")
 clust["date"] = clust["timestamp"].dt.date
 
 st.markdown(
-    '<div style="font-size:1.5rem;font-weight:700;color:#58a6ff;margin-bottom:4px;">📅 PATTERN OF LIFE</div>'
-    f'<div style="font-size:.75rem;color:#8b949e;margin-bottom:20px;">'
-    f'Analysing {len(adf)} sessions over {adf["date"].nunique()} days · Target: {d["target_ip"]}</div>',
+    f'<div style="font-size:1.1rem;font-weight:600;color:#d4dce8;margin-bottom:3px;">Pattern of Life</div>'
+    f'<div style="font-size:.75rem;color:#6b7685;margin-bottom:18px;">'
+    f'{len(adf)} sessions over {adf["date"].nunique()} days · {d["target_ip"]}</div>',
     unsafe_allow_html=True,
 )
 

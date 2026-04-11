@@ -171,7 +171,11 @@ def detect_drift(adf: pd.DataFrame, window_days: int = 15) -> dict:
     recent = adf[adf["timestamp"] >  cutoff]
 
     if len(early) < 5 or len(recent) < 5:
-        return {"drift_detected": False, "score": 0}
+        return {
+            "drift_detected": False, "drift_score": 0, "changes": [],
+            "early_profile": {}, "recent_profile": {},
+            "early_period": "N/A", "recent_period": "N/A",
+        }
 
     def profile(df):
         return {

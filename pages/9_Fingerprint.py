@@ -20,12 +20,9 @@ stats = d["cluster_stats"]
 bg    = d["base_geo"]
 
 st.markdown(
-    '<div style="font-size:1.5rem;font-weight:700;color:#58a6ff;margin-bottom:2px;">🧬 BEHAVIORAL FINGERPRINT</div>'
-    '<div style="font-size:.75rem;color:#8b949e;margin-bottom:4px;">'
-    'Beyond Palantir: a unique 12-dimensional behavioral identity signature</div>'
-    '<div style="font-size:.7rem;color:#484f58;margin-bottom:20px;">'
-    'If two IPs share a similar fingerprint, they are likely the same individual — '
-    'even across VPNs, IP changes, or time gaps.</div>',
+    '<div style="font-size:1.1rem;font-weight:600;color:#d4dce8;margin-bottom:3px;">Behavioral Fingerprint</div>'
+    '<div style="font-size:.75rem;color:#6b7685;margin-bottom:18px;">'
+    '12-dimensional behavioral identity signature · Cross-IP matching</div>',
     unsafe_allow_html=True,
 )
 

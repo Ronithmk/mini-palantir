@@ -18,19 +18,16 @@ factors = d["risk_factors"]
 
 # ── Header ─────────────────────────────────────────────────────────────────────
 st.markdown(
-    f'<div style="display:flex;align-items:center;gap:16px;margin-bottom:4px;">'
-    f'<div style="font-size:1.5rem;font-weight:700;color:#58a6ff;">📊 OVERVIEW</div>'
-    f'<div class="badge badge-ip">{d["target_ip"]}</div>'
-    f'<div class="badge badge-org">{d["case_id"]}</div>'
-    f'<div style="font-size:.7rem;color:#8b949e;margin-left:auto;">'
-    f'Analysed {d["analyzed_at"].strftime("%Y-%m-%d %H:%M")}</div>'
-    f'</div>',
-    unsafe_allow_html=True,
-)
-st.markdown(
-    f'<div style="font-size:.8rem;color:#8b949e;margin-bottom:20px;">'
-    f'{bg.get("city","")}, {bg.get("regionName") or bg.get("region","")}, {bg.get("country","")}  ·  '
-    f'ISP: {bg.get("isp","N/A")}  ·  Timezone: {bg.get("timezone","N/A")}'
+    f'<div style="display:flex;align-items:center;gap:10px;margin-bottom:3px;">'
+    f'<div style="font-size:1.1rem;font-weight:600;color:#d4dce8;">Overview</div>'
+    f'<span class="badge badge-ip">{d["target_ip"]}</span>'
+    f'<span class="badge badge-org">{d["case_id"]}</span>'
+    f'<span style="font-size:.68rem;color:#6b7685;margin-left:auto;">'
+    f'{d["analyzed_at"].strftime("%Y-%m-%d %H:%M")}</span>'
+    f'</div>'
+    f'<div style="font-size:.75rem;color:#6b7685;margin-bottom:18px;">'
+    f'{bg.get("city","")}, {bg.get("regionName") or bg.get("region","")}, {bg.get("country","")} · '
+    f'ISP: {bg.get("isp","N/A")} · TZ: {bg.get("timezone","N/A")}'
     f'</div>',
     unsafe_allow_html=True,
 )

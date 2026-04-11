@@ -13,9 +13,9 @@ wdf = d["web_df"]
 clr = d["clusterer"]
 
 st.markdown(
-    '<div style="font-size:1.5rem;font-weight:700;color:#58a6ff;margin-bottom:4px;">🌐 INTEL FEED</div>'
-    f'<div style="font-size:.75rem;color:#8b949e;margin-bottom:20px;">'
-    f'{len(wdf)} items · Query: "{d["query"]}" · Sources: Wikipedia, Reddit, Google News, DuckDuckGo</div>',
+    f'<div style="font-size:1.1rem;font-weight:600;color:#d4dce8;margin-bottom:3px;">Intel Feed</div>'
+    f'<div style="font-size:.75rem;color:#6b7685;margin-bottom:18px;">'
+    f'{len(wdf)} items · "{d["query"]}" · Wikipedia · Reddit · Google News · DuckDuckGo</div>',
     unsafe_allow_html=True,
 )
 

@@ -19,9 +19,9 @@ valid   = stats[stats["cluster_id"] != -1]
 
 # ── Header ─────────────────────────────────────────────────────────────────────
 st.markdown(
-    '<div style="font-size:1.5rem;font-weight:700;color:#58a6ff;margin-bottom:4px;">📋 INTELLIGENCE REPORT</div>'
-    f'<div style="font-size:.75rem;color:#8b949e;margin-bottom:20px;">'
-    f'{d["case_id"]} · Generated {datetime.now().strftime("%Y-%m-%d %H:%M UTC")}</div>',
+    f'<div style="font-size:1.1rem;font-weight:600;color:#d4dce8;margin-bottom:3px;">Intelligence Report</div>'
+    f'<div style="font-size:.75rem;color:#6b7685;margin-bottom:18px;">'
+    f'{d["case_id"]} · {datetime.now().strftime("%Y-%m-%d %H:%M UTC")}</div>',
     unsafe_allow_html=True,
 )
 
