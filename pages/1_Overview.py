@@ -25,9 +25,56 @@ st.markdown(
     f'<span style="font-size:.68rem;color:#8C8C8C;margin-left:auto;">'
     f'{d["analyzed_at"].strftime("%Y-%m-%d %H:%M")}</span>'
     f'</div>'
-    f'<div style="font-size:.75rem;color:#8C8C8C;margin-bottom:18px;">'
+    f'<div style="font-size:.75rem;color:#8C8C8C;margin-bottom:14px;">'
     f'{bg.get("city","")}, {bg.get("regionName") or bg.get("region","")}, {bg.get("country","")} · '
     f'ISP: {bg.get("isp","N/A")} · TZ: {bg.get("timezone","N/A")}'
+    f'</div>',
+    unsafe_allow_html=True,
+)
+
+# ── Location banner ────────────────────────────────────────────────────────────
+_lat = bg.get("lat", 0)
+_lon = bg.get("lon", 0)
+_city    = bg.get("city", "Unknown")
+_region  = bg.get("regionName") or bg.get("region", "")
+_country = bg.get("country", "Unknown")
+_isp     = bg.get("isp", "N/A")
+_lat_dir = "N" if _lat >= 0 else "S"
+_lon_dir = "E" if _lon >= 0 else "W"
+st.markdown(
+    f'<div class="pal-card" style="padding:12px 18px;margin-bottom:16px;'
+    f'border-left:3px solid #0B88F8;display:flex;align-items:center;gap:24px;flex-wrap:wrap;">'
+    # Pin icon + place
+    f'<div style="display:flex;align-items:center;gap:10px;">'
+    f'<div style="font-size:1.3rem;color:#0B88F8;">📍</div>'
+    f'<div>'
+    f'<div style="font-size:1rem;font-weight:600;color:#F0F0F0;">{_city}, {_region}</div>'
+    f'<div style="font-size:.75rem;color:#8C8C8C;">{_country}</div>'
+    f'</div></div>'
+    # Divider
+    f'<div style="width:1px;height:36px;background:#2A2A2A;"></div>'
+    # Coordinates
+    f'<div>'
+    f'<div style="font-size:.65rem;color:#8C8C8C;letter-spacing:.06em;margin-bottom:2px;">COORDINATES</div>'
+    f'<div style="font-family:\'JetBrains Mono\',monospace;font-size:.95rem;color:#0B88F8;letter-spacing:.04em;">'
+    f'{abs(_lat):.5f}° {_lat_dir} &nbsp; {abs(_lon):.5f}° {_lon_dir}</div>'
+    f'</div>'
+    # Divider
+    f'<div style="width:1px;height:36px;background:#2A2A2A;"></div>'
+    # ISP / org
+    f'<div>'
+    f'<div style="font-size:.65rem;color:#8C8C8C;letter-spacing:.06em;margin-bottom:2px;">NETWORK</div>'
+    f'<div style="font-size:.82rem;color:#F0F0F0;">{_isp}</div>'
+    f'<div style="font-size:.7rem;color:#8C8C8C;">{bg.get("org","")}</div>'
+    f'</div>'
+    # Divider
+    f'<div style="width:1px;height:36px;background:#2A2A2A;"></div>'
+    # Timezone + AS
+    f'<div>'
+    f'<div style="font-size:.65rem;color:#8C8C8C;letter-spacing:.06em;margin-bottom:2px;">TIMEZONE</div>'
+    f'<div style="font-size:.82rem;color:#F0F0F0;">{bg.get("timezone","N/A")}</div>'
+    f'<div style="font-size:.7rem;color:#8C8C8C;">{bg.get("as","")}</div>'
+    f'</div>'
     f'</div>',
     unsafe_allow_html=True,
 )

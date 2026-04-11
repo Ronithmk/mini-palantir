@@ -24,8 +24,8 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-tab_map, tab_scatter, tab_zones, tab_anomaly = st.tabs([
-    "Interactive Map", "Session Scatter", "Zone Analysis", "Anomalies"
+tab_map, tab_scatter, tab_density, tab_zones, tab_anomaly = st.tabs([
+    "Interactive Map", "Session Scatter", "Density Heatmap", "Zone Analysis", "Anomalies"
 ])
 
 # ── Zone-type hex colours (for folium CircleMarker) ───────────────────────────
@@ -197,6 +197,106 @@ with tab_scatter:
     themed(fig_s, "All Activity Sessions (size = duration)", height=580)
     fig_s.update_layout(margin=dict(l=0, r=0, t=48, b=0), legend=dict(x=0.01, y=0.99))
     st.plotly_chart(fig_s, use_container_width=True, key="scatter_map")
+
+with tab_density:
+    col_dm, col_dc = st.columns([3, 1])
+    with col_dm:
+        fig_den = px.density_mapbox(
+            clust, lat="lat", lon="lon",
+            z="duration_min",
+            radius=18,
+            center={"lat": bg["lat"], "lon": bg["lon"]},
+            zoom=8,
+            mapbox_style=MAPBOX,
+            color_continuous_scale=[
+                [0.0, "#0F0F0F"],
+                [0.2, "#0a2a4a"],
+                [0.45, "#0B88F8"],
+                [0.70, "#23D18B"],
+                [0.90, "#F5A623"],
+                [1.0,  "#F14C4C"],
+            ],
+            hover_data={"zone_label": True, "duration_min": True},
+        )
+        themed(fig_den, "Session Density Heatmap (intensity = active minutes)", height=560)
+        fig_den.update_layout(
+            margin=dict(l=0, r=0, t=48, b=0),
+            coloraxis_colorbar=dict(
+                title="Min", tickfont=dict(color="#8C8C8C", size=9),
+                bgcolor="#1C1C1C", bordercolor="#2A2A2A",
+            ),
+        )
+        # Overlay target IP pin
+        pin_df = __import__("pandas").DataFrame([{
+            "lat": bg["lat"], "lon": bg["lon"],
+            "label": f'{bg.get("city","?")} ({d["target_ip"]})',
+        }])
+        fig_den.add_trace(go.Scattermapbox(
+            lat=pin_df["lat"], lon=pin_df["lon"],
+            mode="markers+text",
+            marker=dict(size=14, color="#0B88F8", symbol="circle"),
+            text=pin_df["label"], textposition="top right",
+            textfont=dict(color="#F0F0F0", size=11),
+            name="Target IP",
+            hovertemplate=f"<b>{d['target_ip']}</b><br>{bg.get('city')}, {bg.get('country')}<br>"
+                          f"Lat: {bg['lat']:.5f}<br>Lon: {bg['lon']:.5f}<extra></extra>",
+        ))
+        st.plotly_chart(fig_den, use_container_width=True, key="density_map")
+
+    with col_dc:
+        # Target IP coordinate card
+        _lat, _lon = bg["lat"], bg["lon"]
+        _lat_dir = "N" if _lat >= 0 else "S"
+        _lon_dir = "E" if _lon >= 0 else "W"
+        st.markdown(
+            f'<div class="pal-card pal-card-accent" style="margin-bottom:12px;">'
+            f'<div class="section-hdr">Target Location</div>'
+            f'<div style="font-size:1rem;font-weight:600;color:#F0F0F0;margin-bottom:4px;">'
+            f'{bg.get("city","?")}, {bg.get("country","?")}</div>'
+            f'<div style="font-size:.75rem;color:#8C8C8C;margin-bottom:10px;">'
+            f'{bg.get("regionName") or bg.get("region","")}</div>'
+            f'<div style="font-size:.65rem;color:#8C8C8C;letter-spacing:.06em;margin-bottom:3px;">EXACT COORDINATES</div>'
+            f'<div style="font-family:\'JetBrains Mono\',monospace;font-size:.88rem;color:#0B88F8;margin-bottom:2px;">'
+            f'{abs(_lat):.6f}° {_lat_dir}</div>'
+            f'<div style="font-family:\'JetBrains Mono\',monospace;font-size:.88rem;color:#0B88F8;margin-bottom:10px;">'
+            f'{abs(_lon):.6f}° {_lon_dir}</div>'
+            f'<div style="font-size:.65rem;color:#8C8C8C;letter-spacing:.06em;margin-bottom:3px;">DECIMAL (WGS-84)</div>'
+            f'<div style="font-family:\'JetBrains Mono\',monospace;font-size:.78rem;color:#F0F0F0;">'
+            f'{_lat:.6f}, {_lon:.6f}</div>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
+
+        # Density stats
+        total_min = int(clust["duration_min"].sum())
+        peak_zone = clust.groupby("zone_label")["duration_min"].sum().idxmax()
+        st.markdown(
+            f'<div class="pal-card">'
+            f'<div class="section-hdr">Density Stats</div>'
+            f'<div class="entity-row"><span class="badge badge-ip">SESSIONS</span>{len(clust)}</div>'
+            f'<div class="entity-row"><span class="badge badge-zone">ACTIVE</span>{total_min // 60}h {total_min % 60}m total</div>'
+            f'<div class="entity-row"><span class="badge badge-org">PEAK ZONE</span>{peak_zone}</div>'
+            f'<div class="entity-row"><span class="badge badge-loc">RADIUS</span>'
+            f'~{clust["lat"].std() * 111:.1f} km spread</div>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
+
+        # Zone centroid coordinates
+        st.markdown('<div class="section-hdr" style="margin-top:8px">Zone Centroids</div>',
+                    unsafe_allow_html=True)
+        for _, row in stats[stats["cluster_id"] != -1].iterrows():
+            zt = row.get("zone_type", "TRANSIT")
+            zc = _ZT_HEX.get(zt, "#444444")
+            st.markdown(
+                f'<div style="margin-bottom:8px;">'
+                f'<div style="font-size:.72rem;font-weight:600;color:{zc};margin-bottom:2px;">'
+                f'{row["label"]}</div>'
+                f'<div style="font-family:\'JetBrains Mono\',monospace;font-size:.67rem;color:#8C8C8C;">'
+                f'{row["centroid_lat"]:.5f}, {row["centroid_lon"]:.5f}</div>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
 
 with tab_zones:
     col_z1, col_z2 = st.columns(2)
