@@ -263,7 +263,7 @@ def detect_counter_intel(adf: pd.DataFrame, base_geo: dict) -> dict:
         high_anom_days = daily_anom[daily_anom > daily_anom.quantile(0.85)].index
         for day in high_anom_days:
             next_day = day + timedelta(days=1)
-            if next_day not in daily_anom.index or daily_anom.get(next_day, 0) == 0:
+            if next_day not in daily_anom.index or daily_anom.loc[next_day] == 0:
                 score += 10
                 signals.append((f"Activity gap detected after high-anomaly day ({day})", "medium"))
                 break

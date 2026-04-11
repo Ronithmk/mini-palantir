@@ -80,7 +80,7 @@ Intel Query : {d['query']}
 TARGET PROFILE
 ──────────────
 IP          : {bg.get('query','?')}
-Location    : {bg.get('city','?')}, {bg.get('regionName','?')}, {bg.get('country','?')}
+Location    : {bg.get('city','?')}, {bg.get('regionName') or bg.get('region','?')}, {bg.get('country','?')}
 ISP         : {bg.get('isp','?')}
 Org         : {bg.get('org','?')}
 Timezone    : {bg.get('timezone','?')}
@@ -158,7 +158,7 @@ Confidence level of this briefing: [LOW/MEDIUM/HIGH] — [reason]"""
 class AIAnalyst:
     def __init__(self, api_key: str):
         self.client = anthropic.Anthropic(api_key=api_key)
-        self.model  = "claude-opus-4-6"
+        self.model  = "claude-sonnet-4-6"
 
     def generate_briefing(self, context: str) -> str:
         response = self.client.messages.create(

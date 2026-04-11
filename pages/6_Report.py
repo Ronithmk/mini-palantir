@@ -69,7 +69,7 @@ This report presents findings from a geospatial and open-source intelligence ana
 | Field | Value |
 |---|---|
 | IP Address | `{bg.get('query', '?')}` |
-| City / Region | {bg.get('city', '?')}, {bg.get('regionName', '?')} |
+| City / Region | {bg.get('city', '?')}, {bg.get('regionName') or bg.get('region', '?')} |
 | Country | {bg.get('country', '?')} |
 | ISP | {bg.get('isp', 'N/A')} |
 | Organisation | {bg.get('org', 'N/A')} |

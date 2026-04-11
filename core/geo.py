@@ -85,8 +85,8 @@ class GeoAnalyzer:
             rows.append({
                 "cluster_id": cid,
                 "label": "Noise" if cid == -1 else f"Zone {cid + 1}",
-                "city": sub["city"].mode().iloc[0],
-                "country": sub["country"].mode().iloc[0],
+                "city": sub["city"].mode().iloc[0] if not sub["city"].mode().empty else sub["city"].iloc[0],
+                "country": sub["country"].mode().iloc[0] if not sub["country"].mode().empty else sub["country"].iloc[0],
                 "centroid_lat": round(sub["lat"].mean(), 5),
                 "centroid_lon": round(sub["lon"].mean(), 5),
                 "sessions": len(sub),

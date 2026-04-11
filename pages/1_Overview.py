@@ -29,7 +29,7 @@ st.markdown(
 )
 st.markdown(
     f'<div style="font-size:.8rem;color:#8b949e;margin-bottom:20px;">'
-    f'{bg.get("city")}, {bg.get("regionName")}, {bg.get("country")}  ·  '
+    f'{bg.get("city","")}, {bg.get("regionName") or bg.get("region","")}, {bg.get("country","")}  ·  '
     f'ISP: {bg.get("isp","N/A")}  ·  Timezone: {bg.get("timezone","N/A")}'
     f'</div>',
     unsafe_allow_html=True,
@@ -113,7 +113,7 @@ with col_geo:
         f'<div class="pal-card pal-card-accent">'
         f'<div class="section-hdr">Target Profile</div>'
         f'<div class="entity-row"><span class="badge badge-ip">IP</span>{bg.get("query","")}</div>'
-        f'<div class="entity-row"><span class="badge badge-loc">CITY</span>{bg.get("city","")}, {bg.get("regionName","")}</div>'
+        f'<div class="entity-row"><span class="badge badge-loc">CITY</span>{bg.get("city","")}, {bg.get("regionName") or bg.get("region","")}</div>'
         f'<div class="entity-row"><span class="badge badge-loc">COUNTRY</span>{bg.get("country","")}</div>'
         f'<div class="entity-row"><span class="badge badge-org">ISP</span>{bg.get("isp","")}</div>'
         f'<div class="entity-row"><span class="badge badge-org">ORG</span>{bg.get("org","")}</div>'
