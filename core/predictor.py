@@ -103,7 +103,7 @@ def predict_next_location(cluster_stats: pd.DataFrame, adf: pd.DataFrame) -> dic
         "zone":        top["label"],
         "confidence":  confidence,
         "radius_km":   radius_km,
-        "all_scored":  scored[["label","city","centroid_lat","centroid_lon","score","confidence"]].head(5),
+        "all_scored":  scored[["label","city","centroid_lat","centroid_lon","score","likelihood_pct"]].head(5),
     }
 
 
