@@ -18,8 +18,8 @@ adf["month"]  = adf["timestamp"].dt.strftime("%b")
 clust["date"] = clust["timestamp"].dt.date
 
 st.markdown(
-    f'<div style="font-size:1.1rem;font-weight:600;color:#d4dce8;margin-bottom:3px;">Pattern of Life</div>'
-    f'<div style="font-size:.75rem;color:#6b7685;margin-bottom:18px;">'
+    f'<div style="font-size:1.1rem;font-weight:600;color:#F0F0F0;margin-bottom:3px;">Pattern of Life</div>'
+    f'<div style="font-size:.75rem;color:#8C8C8C;margin-bottom:18px;">'
     f'{len(adf)} sessions over {adf["date"].nunique()} days · {d["target_ip"]}</div>',
     unsafe_allow_html=True,
 )
@@ -41,7 +41,7 @@ profile_items = [
 ]
 
 cols = st.columns(len(profile_items))
-colors = {"acc": "#58a6ff", "grn": "#3fb950", "red": "#f85149", "org": "#d29922"}
+colors = {"acc": "#0B88F8", "grn": "#23D18B", "red": "#F14C4C", "org": "#F5A623"}
 for col, (lbl, val, c) in zip(cols, profile_items):
     with col:
         st.markdown(
@@ -73,12 +73,12 @@ with tab_heat:
             z=pivot.values,
             x=pivot.columns.tolist(),
             y=pivot.index.tolist(),
-            colorscale=[[0,"#0d1117"],[0.3,"#1f3a5f"],[0.7,"#4C72B0"],[1,"#58a6ff"]],
+            colorscale=[[0,"#0F0F0F"],[0.3,"#1f3a5f"],[0.7,"#4C72B0"],[1,"#0B88F8"]],
             hovertemplate="Day: %{y}<br>Hour: %{x}:00<br>Minutes: %{z:.0f}<extra></extra>",
         ))
         themed(fig_heat, "Activity Heatmap — Weekday × Hour", height=360)
         fig_heat.update_layout(
-            xaxis=dict(title="Hour of Day", dtick=2, gridcolor="#21262d"),
+            xaxis=dict(title="Hour of Day", dtick=2, gridcolor="#2A2A2A"),
             yaxis=dict(title=""),
         )
         st.plotly_chart(fig_heat, use_container_width=True)
@@ -90,16 +90,16 @@ with tab_heat:
             x=hourly_bar["hour"], y=hourly_bar["duration_min"] / 60,
             marker=dict(
                 color=hourly_bar["duration_min"],
-                colorscale=[[0,"#161b22"],[1,"#58a6ff"]],
-                line=dict(color="#0d1117", width=0.5),
+                colorscale=[[0,"#1C1C1C"],[1,"#0B88F8"]],
+                line=dict(color="#0F0F0F", width=0.5),
             ),
             hovertemplate="Hour %{x}:00 — %{y:.1f}h<extra></extra>",
         ))
         themed(fig_hb, "Total Activity by Hour of Day (hours)", height=360)
         fig_hb.update_layout(xaxis=dict(title="Hour", dtick=2), yaxis=dict(title="Hours"))
         # Mark peak hour
-        fig_hb.add_vline(x=peak_hour, line_color="#d29922", line_dash="dash",
-                         annotation_text="peak", annotation_font_color="#d29922")
+        fig_hb.add_vline(x=peak_hour, line_color="#F5A623", line_dash="dash",
+                         annotation_text="peak", annotation_font_color="#F5A623")
         st.plotly_chart(fig_hb, use_container_width=True)
 
     # Zone × hour heatmap
@@ -109,7 +109,7 @@ with tab_heat:
         z=pivot_zh.values,
         x=pivot_zh.columns.tolist(),
         y=pivot_zh.index.tolist(),
-        colorscale=[[0,"#0d1117"],[0.5,"#3a2a1f"],[1,"#d29922"]],
+        colorscale=[[0,"#0F0F0F"],[0.5,"#3a2a1f"],[1,"#F5A623"]],
         hovertemplate="Zone: %{y}<br>Hour: %{x}:00<br>Minutes: %{z:.0f}<extra></extra>",
     ))
     themed(fig_zh, "Zone Activity by Hour", height=300)
@@ -121,20 +121,20 @@ with tab_timeline:
     daily["hours"] = (daily["duration_min"] / 60).round(2)
 
     fig_area = go.Figure()
-    ZONE_COLORS = {"Primary Zone": "#58a6ff", "Secondary Zone": "#d29922",
-                   "Travel / Remote": "#f85149", "Noise": "#484f58"}
+    ZONE_COLORS = {"Primary Zone": "#0B88F8", "Secondary Zone": "#F5A623",
+                   "Travel / Remote": "#F14C4C", "Noise": "#444444"}
     ZONE_FILL = {
-        "Primary Zone":   "rgba(88,166,255,0.12)",
-        "Secondary Zone": "rgba(210,153,34,0.12)",
-        "Travel / Remote":"rgba(248,81,73,0.12)",
-        "Noise":          "rgba(72,79,88,0.10)",
+        "Primary Zone":   "rgba(11,136,248,0.10)",
+        "Secondary Zone": "rgba(245,166,35,0.10)",
+        "Travel / Remote":"rgba(241,76,76,0.10)",
+        "Noise":          "rgba(68,68,68,0.08)",
     }
     for zone in daily["zone_label"].unique():
         sub = daily[daily["zone_label"] == zone]
         fig_area.add_trace(go.Scatter(
             x=sub["date"], y=sub["hours"], name=zone,
             fill="tozeroy", mode="lines",
-            line=dict(color=ZONE_COLORS.get(zone, "#8b949e"), width=1.5),
+            line=dict(color=ZONE_COLORS.get(zone, "#8C8C8C"), width=1.5),
             fillcolor=ZONE_FILL.get(zone, "rgba(139,148,158,0.10)"),
         ))
     themed(fig_area, "Daily Activity Timeline (hours per zone)", height=400)
@@ -146,7 +146,7 @@ with tab_timeline:
     fig_anom = go.Figure()
     fig_anom.add_trace(go.Bar(
         x=anom_daily["date"], y=anom_daily["anomalies"],
-        marker_color="#f85149", name="Anomalous Sessions",
+        marker_color="#F14C4C", name="Anomalous Sessions",
         opacity=0.85,
     ))
     themed(fig_anom, "Daily Anomaly Count", height=250)
@@ -158,14 +158,14 @@ with tab_duration:
     with col_d1:
         fig_hist = go.Figure(go.Histogram(
             x=adf["duration_min"], nbinsx=40,
-            marker=dict(color="#58a6ff", line=dict(color="#0d1117", width=0.5)),
+            marker=dict(color="#0B88F8", line=dict(color="#0F0F0F", width=0.5)),
             opacity=0.85,
         ))
         p25 = adf["duration_min"].quantile(0.25)
         p75 = adf["duration_min"].quantile(0.75)
-        fig_hist.add_vline(x=adf["duration_min"].median(), line_color="#3fb950", line_dash="dash",
-                           annotation_text="median", annotation_font_color="#3fb950")
-        fig_hist.add_vrect(x0=p25, x1=p75, fillcolor="#58a6ff", opacity=0.08, line_width=0)
+        fig_hist.add_vline(x=adf["duration_min"].median(), line_color="#23D18B", line_dash="dash",
+                           annotation_text="median", annotation_font_color="#23D18B")
+        fig_hist.add_vrect(x0=p25, x1=p75, fillcolor="#0B88F8", opacity=0.08, line_width=0)
         themed(fig_hist, "Session Duration Distribution (minutes)", height=360)
         fig_hist.update_layout(xaxis_title="Duration (min)", yaxis_title="Sessions", bargap=0.05)
         st.plotly_chart(fig_hist, use_container_width=True)
@@ -176,7 +176,7 @@ with tab_duration:
         zone_names = list(adf["zone_label"].unique())
         fig_box = go.Figure()
         for name, data, color in zip(zone_names, box_data,
-                                     ["#58a6ff","#d29922","#f85149","#8b949e"]):
+                                     ["#0B88F8","#F5A623","#F14C4C","#8C8C8C"]):
             fig_box.add_trace(go.Box(
                 y=data, name=name,
                 marker_color=color, line_color=color,
@@ -198,13 +198,13 @@ with tab_calendar:
     fig_cal = px.density_heatmap(
         daily_total, x="date", y="dow",
         z="hours",
-        color_continuous_scale=[[0,"#0d1117"],[0.4,"#1f3a5f"],[1,"#58a6ff"]],
+        color_continuous_scale=[[0,"#0F0F0F"],[0.4,"#1f3a5f"],[1,"#0B88F8"]],
         nbinsx=len(daily_total),
     )
     themed(fig_cal, "Calendar Heatmap — Daily Activity (hours)", height=320)
     fig_cal.update_layout(
         xaxis_title="Date", yaxis_title="",
-        coloraxis_colorbar=dict(title="Hours", tickfont=dict(color="#8b949e")),
+        coloraxis_colorbar=dict(title="Hours", tickfont=dict(color="#8C8C8C")),
         yaxis=dict(categoryorder="array",
                    categoryarray=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]),
     )

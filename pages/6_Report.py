@@ -19,8 +19,8 @@ valid   = stats[stats["cluster_id"] != -1]
 
 # ── Header ─────────────────────────────────────────────────────────────────────
 st.markdown(
-    f'<div style="font-size:1.1rem;font-weight:600;color:#d4dce8;margin-bottom:3px;">Intelligence Report</div>'
-    f'<div style="font-size:.75rem;color:#6b7685;margin-bottom:18px;">'
+    f'<div style="font-size:1.1rem;font-weight:600;color:#F0F0F0;margin-bottom:3px;">Intelligence Report</div>'
+    f'<div style="font-size:.75rem;color:#8C8C8C;margin-bottom:18px;">'
     f'{d["case_id"]} · {datetime.now().strftime("%Y-%m-%d %H:%M UTC")}</div>',
     unsafe_allow_html=True,
 )
@@ -29,12 +29,12 @@ rc = risk_color(risk)
 rk_label = "HIGH" if risk >= 70 else "MEDIUM" if risk >= 40 else "LOW"
 
 st.markdown(
-    f'<div class="pal-card" style="border-left:4px solid {rc};background:#161b22;">'
+    f'<div class="pal-card" style="border-left:4px solid {rc};background:#1C1C1C;">'
     f'<div style="display:flex;align-items:center;gap:16px;">'
     f'<div style="font-size:2.5rem;font-weight:700;color:{rc}">{risk}</div>'
     f'<div>'
     f'<div style="font-size:1rem;font-weight:700;color:{rc}">RISK: {rk_label}</div>'
-    f'<div style="font-size:.75rem;color:#8b949e;">Case {d["case_id"]} · Target: {d["target_ip"]}</div>'
+    f'<div style="font-size:.75rem;color:#8C8C8C;">Case {d["case_id"]} · Target: {d["target_ip"]}</div>'
     f'</div></div></div>',
     unsafe_allow_html=True,
 )
@@ -158,14 +158,14 @@ with col_aside:
     ]
     for lbl, val in quick:
         st.markdown(
-            f'<div class="entity-row"><span style="color:#8b949e;flex:1">{lbl}</span>'
-            f'<b style="color:#58a6ff">{val}</b></div>',
+            f'<div class="entity-row"><span style="color:#8C8C8C;flex:1">{lbl}</span>'
+            f'<b style="color:#0B88F8">{val}</b></div>',
             unsafe_allow_html=True,
         )
 
     st.markdown('<div class="section-hdr" style="margin-top:20px">Risk Factors</div>', unsafe_allow_html=True)
     for msg, kind in factors:
-        color = {"alert": "#f85149", "warn": "#d29922", "safe": "#3fb950"}.get(kind, "#8b949e")
+        color = {"alert": "#F14C4C", "warn": "#F5A623", "safe": "#23D18B"}.get(kind, "#8C8C8C")
         dot   = {"alert": "dot-alert", "warn": "dot-warn",  "safe": "dot-live"}.get(kind, "dot-dead")
         st.markdown(
             f'<div class="entity-row"><span class="dot {dot}"></span>'

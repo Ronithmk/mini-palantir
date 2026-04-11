@@ -18,8 +18,8 @@ pred   = d["prediction"]
 anomdf = d["anomaly_df"]
 
 st.markdown(
-    f'<div style="font-size:1.1rem;font-weight:600;color:#d4dce8;margin-bottom:3px;">Geo Intelligence</div>'
-    f'<div style="font-size:.75rem;color:#6b7685;margin-bottom:18px;">'
+    f'<div style="font-size:1.1rem;font-weight:600;color:#F0F0F0;margin-bottom:3px;">Geo Intelligence</div>'
+    f'<div style="font-size:.75rem;color:#8C8C8C;margin-bottom:18px;">'
     f'{d["target_ip"]} · {bg.get("city")}, {bg.get("country")} · {stats[stats["cluster_id"]!=-1]["cluster_id"].nunique()} zones</div>',
     unsafe_allow_html=True,
 )
@@ -30,7 +30,7 @@ tab_map, tab_scatter, tab_zones, tab_anomaly = st.tabs([
 
 # ── Zone-type hex colours (for folium CircleMarker) ───────────────────────────
 _ZT_HEX = {"PRIMARY": "#00e5ff", "SECONDARY": "#ffd60a",
-            "TRANSIT": "#bf5af2", "NOISE": "#484f58"}
+            "TRANSIT": "#bf5af2", "NOISE": "#444444"}
 
 # Map zone_label → zone_type for session dots
 def _label_to_zt(zone_label: str) -> str:
@@ -48,7 +48,7 @@ if d["folium_map"] is None:
     # ── Zone centroid circles (Trackr-style coloured by zone type) ────────────
     for _, row in valid_stats.iterrows():
         zt     = row.get("zone_type", "TRANSIT")
-        zcolor = _ZT_HEX.get(zt, "#484f58")
+        zcolor = _ZT_HEX.get(zt, "#444444")
         fcolor = ZONE_TYPE_FOLIUM.get(zt, "gray")
         folium.CircleMarker(
             location=[row["centroid_lat"], row["centroid_lon"]],
@@ -73,7 +73,7 @@ if d["folium_map"] is None:
     if pred:
         for _, row in valid_stats.iterrows():
             zt     = row.get("zone_type", "TRANSIT")
-            zcolor = _ZT_HEX.get(zt, "#484f58")
+            zcolor = _ZT_HEX.get(zt, "#444444")
             folium.PolyLine(
                 [[row["centroid_lat"], row["centroid_lon"]], [pred["lat"], pred["lon"]]],
                 color=zcolor, weight=1, opacity=0.40, dash_array="4 6",
@@ -84,7 +84,7 @@ if d["folium_map"] is None:
     sample = clust.sample(min(400, len(clust)), random_state=42)
     for _, row in sample.iterrows():
         zt     = _label_to_zt(row["zone_label"])
-        zcolor = _ZT_HEX.get(zt, "#484f58")
+        zcolor = _ZT_HEX.get(zt, "#444444")
         folium.CircleMarker(
             location=[row["lat"], row["lon"]],
             radius=2.5, color=zcolor, fill=True, fill_color=zcolor, fill_opacity=0.55,
@@ -106,7 +106,7 @@ if d["folium_map"] is None:
     for _, row in anoms.iterrows():
         folium.CircleMarker(
             location=[row["lat"], row["lon"]],
-            radius=5, color="#f85149", fill=True, fill_opacity=0.8,
+            radius=5, color="#F14C4C", fill=True, fill_opacity=0.8,
             tooltip=f"⚠ Anomaly: {row['anomaly_reason'].strip()}",
         ).add_to(m)
 
@@ -122,15 +122,15 @@ if d["folium_map"] is None:
     # ── Legend ────────────────────────────────────────────────────────────────
     legend = """
     <div style='position:fixed;bottom:30px;left:30px;z-index:9999;
-         background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px;
-         font-family:monospace;font-size:11px;color:#e6edf3;'>
-    <b style='color:#58a6ff;'>LEGEND</b><br>
+         background:#1C1C1C;border:1px solid #2A2A2A;border-radius:8px;padding:12px;
+         font-family:monospace;font-size:11px;color:#F0F0F0;'>
+    <b style='color:#0B88F8;'>LEGEND</b><br>
     <span style='color:#00e5ff'>●</span> PRIMARY zone<br>
     <span style='color:#ffd60a'>●</span> SECONDARY zone<br>
     <span style='color:#bf5af2'>●</span> TRANSIT zone<br>
-    <span style='color:#f85149'>●</span> Anomaly<br>
+    <span style='color:#F14C4C'>●</span> Anomaly<br>
     <span style='color:#ffd60a'>- -</span> Movement trail<br>
-    <span style='color:#3fb950'>⌂</span> Predicted location
+    <span style='color:#23D18B'>⌂</span> Predicted location
     </div>
     """
     m.get_root().html.add_child(folium.Element(legend))
@@ -145,7 +145,7 @@ with tab_map:
         st.markdown('<div class="section-hdr">Zone Summary</div>', unsafe_allow_html=True)
         for _, row in stats[stats["cluster_id"] != -1].iterrows():
             zt      = row.get("zone_type", "TRANSIT")
-            zcolor  = _ZT_HEX.get(zt, "#484f58")
+            zcolor  = _ZT_HEX.get(zt, "#444444")
             bar_w   = int(row["likelihood_pct"])
             spark   = row.get("spark_data", [])
             svg     = sparkline_svg(spark, width=96, height=22, color=zcolor)
@@ -164,23 +164,23 @@ with tab_map:
                 # Sparkline
                 f'<div style="margin:4px 0 6px;">{svg}</div>'
                 # City + coords
-                f'<div style="font-size:.72rem;color:#8b949e;">{row["city"]}</div>'
-                f'<div style="font-family:monospace;font-size:.67rem;color:#484f58;margin-bottom:5px;">'
+                f'<div style="font-size:.72rem;color:#8C8C8C;">{row["city"]}</div>'
+                f'<div style="font-family:monospace;font-size:.67rem;color:#444444;margin-bottom:5px;">'
                 f'{row["centroid_lat"]}, {row["centroid_lon"]}</div>'
                 # Likelihood bar
                 f'<div class="risk-bar-bg"><div class="risk-bar" '
                 f'style="width:{bar_w}%;background:{zcolor}"></div></div>'
                 f'<div style="display:flex;justify-content:space-between;font-size:.68rem;margin-top:3px;">'
                 f'<span style="color:{zcolor}"><b>{row["likelihood_pct"]}%</b> likelihood</span>'
-                f'<span style="color:#8b949e">{row["sessions"]} sess</span>'
+                f'<span style="color:#8C8C8C">{row["sessions"]} sess</span>'
                 f'</div>'
                 # Active window + frequency
-                f'<div style="font-size:.67rem;color:#8b949e;margin-top:5px;">'
-                f'<span style="color:#484f58">ACTIVE</span> {aw}</div>'
-                f'<div style="font-size:.67rem;color:#8b949e;">'
-                f'<span style="color:#484f58">FREQ</span> {freq} &nbsp;·&nbsp; {row["total_hours"]}h total</div>'
+                f'<div style="font-size:.67rem;color:#8C8C8C;margin-top:5px;">'
+                f'<span style="color:#444444">ACTIVE</span> {aw}</div>'
+                f'<div style="font-size:.67rem;color:#8C8C8C;">'
+                f'<span style="color:#444444">FREQ</span> {freq} &nbsp;·&nbsp; {row["total_hours"]}h total</div>'
                 # First / last seen
-                f'<div style="font-size:.63rem;color:#484f58;margin-top:4px;">'
+                f'<div style="font-size:.63rem;color:#444444;margin-top:4px;">'
                 f'First {fs}<br>Last &nbsp;{ls}</div>'
                 f'</div>',
                 unsafe_allow_html=True,
@@ -192,7 +192,7 @@ with tab_scatter:
         color="zone_label", size="duration_min",
         hover_data={"city": True, "duration_min": True, "timestamp": True, "lat": False, "lon": False},
         mapbox_style=MAPBOX, zoom=9,
-        color_discrete_sequence=["#58a6ff", "#d29922", "#f85149", "#8b949e"],
+        color_discrete_sequence=["#0B88F8", "#F5A623", "#F14C4C", "#8C8C8C"],
     )
     themed(fig_s, "All Activity Sessions (size = duration)", height=580)
     fig_s.update_layout(margin=dict(l=0, r=0, t=48, b=0), legend=dict(x=0.01, y=0.99))
@@ -205,9 +205,9 @@ with tab_zones:
         zone_t["hours"] = (zone_t["duration_min"] / 60).round(2)
         fig_zt = go.Figure(go.Bar(
             x=zone_t["zone_label"], y=zone_t["hours"],
-            marker_color=["#58a6ff", "#d29922", "#f85149", "#8b949e"][:len(zone_t)],
+            marker_color=["#0B88F8", "#F5A623", "#F14C4C", "#8C8C8C"][:len(zone_t)],
             text=zone_t["hours"].apply(lambda x: f"{x:.1f}h"),
-            textposition="outside", textfont=dict(color="#e6edf3"),
+            textposition="outside", textfont=dict(color="#F0F0F0"),
         ))
         themed(fig_zt, "Total Time per Zone (hours)", height=340)
         st.plotly_chart(fig_zt, use_container_width=True)
@@ -218,8 +218,8 @@ with tab_zones:
         fig_zp = go.Figure(go.Pie(
             labels=zc["zone"], values=zc["sessions"],
             hole=0.52, textinfo="label+percent",
-            marker=dict(colors=["#58a6ff", "#d29922", "#f85149", "#8b949e"],
-                        line=dict(color="#0d1117", width=2)),
+            marker=dict(colors=["#0B88F8", "#F5A623", "#F14C4C", "#8C8C8C"],
+                        line=dict(color="#0F0F0F", width=2)),
         ))
         themed(fig_zp, "Session Share by Zone", height=340)
         st.plotly_chart(fig_zp, use_container_width=True)
@@ -241,9 +241,9 @@ with tab_zones:
         ))
     themed(fig_r, "Zone Profile Radar", height=400)
     fig_r.update_layout(polar=dict(
-        bgcolor="#161b22",
-        radialaxis=dict(color="#484f58", gridcolor="#21262d"),
-        angularaxis=dict(color="#8b949e", gridcolor="#21262d"),
+        bgcolor="#1C1C1C",
+        radialaxis=dict(color="#444444", gridcolor="#2A2A2A"),
+        angularaxis=dict(color="#8C8C8C", gridcolor="#2A2A2A"),
     ))
     st.plotly_chart(fig_r, use_container_width=True)
 
@@ -252,18 +252,18 @@ with tab_anomaly:
     n_anom = adf["anomaly"].sum()
     st.markdown(
         f'<div class="pal-card pal-card-red">'
-        f'<b style="color:#f85149">{n_anom} anomalous sessions</b> detected out of {len(adf)} total '
+        f'<b style="color:#F14C4C">{n_anom} anomalous sessions</b> detected out of {len(adf)} total '
         f'({n_anom/len(adf)*100:.1f}%)</div>',
         unsafe_allow_html=True,
     )
     col_a1, col_a2 = st.columns(2)
     with col_a1:
         # Anomaly map
-        adf["color"] = adf["anomaly"].map({True: "#f85149", False: "#30363d"})
+        adf["color"] = adf["anomaly"].map({True: "#F14C4C", False: "#2A2A2A"})
         fig_am = px.scatter_mapbox(
             adf, lat="lat", lon="lon",
             color="anomaly",
-            color_discrete_map={True: "#f85149", False: "#30363d"},
+            color_discrete_map={True: "#F14C4C", False: "#2A2A2A"},
             hover_data={"anomaly_reason": True, "duration_min": True},
             mapbox_style=MAPBOX, zoom=8, size_max=8,
         )
@@ -280,9 +280,9 @@ with tab_anomaly:
         fig_rc = go.Figure(go.Bar(
             x=reason_counts["count"], y=reason_counts["reason"],
             orientation="h",
-            marker_color="#f85149",
+            marker_color="#F14C4C",
             text=reason_counts["count"], textposition="outside",
-            textfont=dict(color="#e6edf3"),
+            textfont=dict(color="#F0F0F0"),
         ))
         themed(fig_rc, "Anomaly Types", height=380)
         st.plotly_chart(fig_rc, use_container_width=True)

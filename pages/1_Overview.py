@@ -19,13 +19,13 @@ factors = d["risk_factors"]
 # ── Header ─────────────────────────────────────────────────────────────────────
 st.markdown(
     f'<div style="display:flex;align-items:center;gap:10px;margin-bottom:3px;">'
-    f'<div style="font-size:1.1rem;font-weight:600;color:#d4dce8;">Overview</div>'
+    f'<div style="font-size:1.1rem;font-weight:600;color:#F0F0F0;">Overview</div>'
     f'<span class="badge badge-ip">{d["target_ip"]}</span>'
     f'<span class="badge badge-org">{d["case_id"]}</span>'
-    f'<span style="font-size:.68rem;color:#6b7685;margin-left:auto;">'
+    f'<span style="font-size:.68rem;color:#8C8C8C;margin-left:auto;">'
     f'{d["analyzed_at"].strftime("%Y-%m-%d %H:%M")}</span>'
     f'</div>'
-    f'<div style="font-size:.75rem;color:#6b7685;margin-bottom:18px;">'
+    f'<div style="font-size:.75rem;color:#8C8C8C;margin-bottom:18px;">'
     f'{bg.get("city","")}, {bg.get("regionName") or bg.get("region","")}, {bg.get("country","")} · '
     f'ISP: {bg.get("isp","N/A")} · TZ: {bg.get("timezone","N/A")}'
     f'</div>',
@@ -57,17 +57,17 @@ with col_risk:
     fig_gauge = go.Figure(go.Indicator(
         mode="gauge+number",
         value=risk,
-        title={"text": "Risk Score", "font": {"size": 12, "color": "#8b949e"}},
+        title={"text": "Risk Score", "font": {"size": 12, "color": "#8C8C8C"}},
         number={"font": {"size": 36, "color": rc}},
         gauge={
-            "axis": {"range": [0, 100], "tickcolor": "#30363d"},
+            "axis": {"range": [0, 100], "tickcolor": "#2A2A2A"},
             "bar": {"color": rc, "thickness": 0.25},
-            "bgcolor": "#161b22",
+            "bgcolor": "#1C1C1C",
             "borderwidth": 0,
             "steps": [
-                {"range": [0,  40], "color": "#1f3a2e"},
-                {"range": [40, 70], "color": "#3a2a1f"},
-                {"range": [70,100], "color": "#3a1f1f"},
+                {"range": [0,  40], "color": "#152014"},
+                {"range": [40, 70], "color": "#1e1a10"},
+                {"range": [70,100], "color": "#201212"},
             ],
         },
     ))
@@ -76,7 +76,7 @@ with col_risk:
     st.plotly_chart(fig_gauge, use_container_width=True)
 
     for msg, kind in factors:
-        color = {"alert": "#f85149", "warn": "#d29922", "safe": "#3fb950"}.get(kind, "#8b949e")
+        color = {"alert": "#F14C4C", "warn": "#F5A623", "safe": "#23D18B"}.get(kind, "#8C8C8C")
         dot   = {"alert": "dot-alert", "warn": "dot-warn",  "safe": "dot-live"}.get(kind, "dot-dead")
         st.markdown(
             f'<div class="entity-row"><span class="dot {dot}"></span>'
@@ -90,16 +90,16 @@ with col_pred:
         st.markdown(
             f'<div class="pal-card pal-card-green">'
             f'<div class="section-hdr">Predicted Current Location</div>'
-            f'<div style="font-size:1.4rem;font-weight:700;color:#e6edf3;">{pred["city"]}</div>'
-            f'<div style="color:#8b949e;font-size:.8rem;">{pred["country"]} · {pred["zone"]}</div>'
-            f'<div style="margin-top:12px;font-family:monospace;font-size:.8rem;color:#58a6ff;">'
+            f'<div style="font-size:1.4rem;font-weight:700;color:#F0F0F0;">{pred["city"]}</div>'
+            f'<div style="color:#8C8C8C;font-size:.8rem;">{pred["country"]} · {pred["zone"]}</div>'
+            f'<div style="margin-top:12px;font-family:monospace;font-size:.8rem;color:#0B88F8;">'
             f'{pred["lat"]}° N &nbsp; {pred["lon"]}° E</div>'
             f'<div style="margin-top:10px;">'
             f'<div class="risk-bar-bg"><div class="risk-bar" style="width:{pred["confidence"]}%;background:{conf_c};"></div></div>'
-            f'<div style="font-size:.7rem;color:#8b949e;margin-top:4px;">'
+            f'<div style="font-size:.7rem;color:#8C8C8C;margin-top:4px;">'
             f'Confidence: <b style="color:{conf_c}">{pred["confidence"]}%</b></div>'
             f'</div>'
-            f'<div style="margin-top:10px;font-size:.75rem;color:#8b949e;">'
+            f'<div style="margin-top:10px;font-size:.75rem;color:#8C8C8C;">'
             f'{pred["sessions"]} sessions · {pred["total_hours"]}h total</div>'
             f'</div>',
             unsafe_allow_html=True,
@@ -149,12 +149,12 @@ if not wdf.empty:
         x=src_counts.index.tolist(),
         y=src_counts.values.tolist(),
         marker=dict(
-            color=["#4C72B0", "#ff6314", "#3fb950", "#bc8cff"][:len(src_counts)],
-            line=dict(color="#0d1117", width=1),
+            color=["#0B88F8", "#F5A623", "#23D18B", "#9B59B6"][:len(src_counts)],
+            line=dict(color="#0F0F0F", width=1),
         ),
         text=src_counts.values.tolist(),
         textposition="outside",
-        textfont=dict(color="#e6edf3", size=11),
+        textfont=dict(color="#F0F0F0", size=11),
     ))
     themed(fig_src, "Intel Items by Source", height=280)
     fig_src.update_layout(xaxis_title="", yaxis_title="Items", showlegend=False)

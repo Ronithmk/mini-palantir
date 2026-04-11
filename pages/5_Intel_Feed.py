@@ -13,8 +13,8 @@ wdf = d["web_df"]
 clr = d["clusterer"]
 
 st.markdown(
-    f'<div style="font-size:1.1rem;font-weight:600;color:#d4dce8;margin-bottom:3px;">Intel Feed</div>'
-    f'<div style="font-size:.75rem;color:#6b7685;margin-bottom:18px;">'
+    f'<div style="font-size:1.1rem;font-weight:600;color:#F0F0F0;margin-bottom:3px;">Intel Feed</div>'
+    f'<div style="font-size:.75rem;color:#8C8C8C;margin-bottom:18px;">'
     f'{len(wdf)} items · "{d["query"]}" · Wikipedia · Reddit · Google News · DuckDuckGo</div>',
     unsafe_allow_html=True,
 )
@@ -39,7 +39,7 @@ for i, (cat, cnt) in enumerate(src_counts.items()):
 with cols[-1]:
     n_topics = wdf["topic_label"].nunique() if "topic_label" in wdf.columns else 0
     st.markdown(
-        f'<div class="pal-metric"><div class="val" style="color:#d29922">{n_topics}</div>'
+        f'<div class="pal-metric"><div class="val" style="color:#F5A623">{n_topics}</div>'
         f'<div class="lbl">Topics</div></div>',
         unsafe_allow_html=True,
     )
@@ -63,7 +63,7 @@ with tab_feed:
         mask = show["text"].str.contains(search_term.strip(), case=False, na=False)
         show = show[mask]
 
-    st.markdown(f'<div style="font-size:.7rem;color:#8b949e;margin-bottom:8px;">{len(show)} items</div>',
+    st.markdown(f'<div style="font-size:.7rem;color:#8C8C8C;margin-bottom:8px;">{len(show)} items</div>',
                 unsafe_allow_html=True)
 
     BADGE_COLOR = {"Encyclopedia": "wiki", "Social Media": "reddit",
@@ -79,17 +79,17 @@ with tab_feed:
         topic = str(row.get("topic_label", "")) if "topic_label" in row.index else ""
 
         with st.expander(f"{ttl[:100]}"):
-            pub_html   = f'<span style="font-size:.7rem;color:#484f58">{pub[:30]}</span>' if pub else ""
+            pub_html   = f'<span style="font-size:.7rem;color:#444444">{pub[:30]}</span>' if pub else ""
             topic_html = f'<span class="badge badge-zone" style="margin-left:auto">{topic[:30]}</span>' if topic else ""
-            url_html   = f'<a href="{url}" target="_blank" style="font-size:.75rem;color:#58a6ff;">Open source →</a>' if url else ""
+            url_html   = f'<a href="{url}" target="_blank" style="font-size:.75rem;color:#0B88F8;">Open source →</a>' if url else ""
             st.markdown(
                 f'<div class="pal-card" style="margin:0;padding:12px 16px;">'
                 f'<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">'
                 f'<span class="badge badge-{bk}">{row["category"]}</span>'
-                f'<span style="font-size:.75rem;color:#8b949e">{src}</span>'
+                f'<span style="font-size:.75rem;color:#8C8C8C">{src}</span>'
                 f'{pub_html}{topic_html}'
                 f'</div>'
-                f'<div style="font-size:.85rem;color:#e6edf3;line-height:1.5;">{bdy[:500]}</div>'
+                f'<div style="font-size:.85rem;color:#F0F0F0;line-height:1.5;">{bdy[:500]}</div>'
                 f'{url_html}'
                 f'</div>',
                 unsafe_allow_html=True,
@@ -109,7 +109,7 @@ with tab_clusters:
                 color_discrete_sequence=px.colors.qualitative.Bold,
             )
             fig_sc.update_traces(marker=dict(size=9, opacity=0.85,
-                                             line=dict(color="#0d1117", width=0.8)))
+                                             line=dict(color="#0F0F0F", width=0.8)))
             themed(fig_sc, "Topic Clusters (TF-IDF → KMeans, 2D projection)", height=500)
             fig_sc.update_layout(
                 xaxis=dict(showticklabels=False, showgrid=False),
@@ -126,12 +126,12 @@ with tab_clusters:
             orientation="h",
             marker=dict(
                 color=topic_sum["count"],
-                colorscale=[[0,"#161b22"],[1,"#d29922"]],
-                line=dict(color="#0d1117", width=0.5),
+                colorscale=[[0,"#1C1C1C"],[1,"#F5A623"]],
+                line=dict(color="#0F0F0F", width=0.5),
             ),
             text=topic_sum["sources"],
             textposition="outside",
-            textfont=dict(color="#8b949e", size=9),
+            textfont=dict(color="#8C8C8C", size=9),
         ))
         themed(fig_tb, "Items per Topic Cluster", height=500)
         fig_tb.update_layout(
@@ -159,11 +159,11 @@ with tab_charts:
         fig_src = go.Figure(go.Bar(
             x=type_sum["category"], y=type_sum["count"],
             marker=dict(
-                color=[CAT_COLORS.get(c, "#8b949e") for c in type_sum["category"]],
-                line=dict(color="#0d1117", width=1),
+                color=[CAT_COLORS.get(c, "#8C8C8C") for c in type_sum["category"]],
+                line=dict(color="#0F0F0F", width=1),
             ),
             text=type_sum["count"], textposition="outside",
-            textfont=dict(color="#e6edf3"),
+            textfont=dict(color="#F0F0F0"),
         ))
         themed(fig_src, "Items by Source Type", height=350)
         fig_src.update_layout(showlegend=False, xaxis_title="", yaxis_title="Items")
@@ -174,11 +174,11 @@ with tab_charts:
             labels=type_sum["category"], values=type_sum["count"],
             hole=0.5,
             marker=dict(
-                colors=[CAT_COLORS.get(c, "#8b949e") for c in type_sum["category"]],
-                line=dict(color="#0d1117", width=2),
+                colors=[CAT_COLORS.get(c, "#8C8C8C") for c in type_sum["category"]],
+                line=dict(color="#0F0F0F", width=2),
             ),
             textinfo="label+percent",
-            textfont=dict(color="#e6edf3", size=11),
+            textfont=dict(color="#F0F0F0", size=11),
         ))
         themed(fig_pie, "Source Distribution", height=350)
         st.plotly_chart(fig_pie, use_container_width=True)

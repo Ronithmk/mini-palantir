@@ -15,8 +15,8 @@ G: nx.Graph = d["graph"]
 ents = d["entities"]
 
 st.markdown(
-    f'<div style="font-size:1.1rem;font-weight:600;color:#d4dce8;margin-bottom:3px;">Link Analysis</div>'
-    f'<div style="font-size:.75rem;color:#6b7685;margin-bottom:18px;">'
+    f'<div style="font-size:1.1rem;font-weight:600;color:#F0F0F0;margin-bottom:3px;">Link Analysis</div>'
+    f'<div style="font-size:.75rem;color:#8C8C8C;margin-bottom:18px;">'
     f'{G.number_of_nodes()} nodes · {G.number_of_edges()} edges · {d["target_ip"]}</div>',
     unsafe_allow_html=True,
 )
@@ -81,7 +81,7 @@ with col_main:
                               for t in cent_df["Type"]],
                 text=cent_df["Type"],
                 textposition="outside",
-                textfont=dict(color="#8b949e", size=9),
+                textfont=dict(color="#8C8C8C", size=9),
             ))
             themed(fig_cent, "Node Centrality (connection importance)", height=max(280, len(cent_df)*22))
             fig_cent.update_layout(yaxis=dict(categoryorder="total ascending"))

@@ -20,8 +20,8 @@ inject_theme()
 # ── Sidebar ────────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown(
-        '<div style="font-size:1rem;font-weight:600;color:#4d9de0;margin-bottom:2px;">Mini Palantir</div>'
-        '<div style="font-size:.68rem;color:#6b7685;margin-bottom:10px;">Intelligence Platform</div>',
+        '<div style="font-size:1rem;font-weight:600;color:#0B88F8;margin-bottom:2px;">Mini Palantir</div>'
+        '<div style="font-size:.68rem;color:#8C8C8C;margin-bottom:10px;">Intelligence Platform</div>',
         unsafe_allow_html=True,
     )
     st.markdown(LIVE_CLOCK_HTML, unsafe_allow_html=True)
@@ -29,12 +29,12 @@ with st.sidebar:
 
     d = get_data()
     if d:
-        rc = "#e05050" if d["risk_score"] >= 70 else "#c09000" if d["risk_score"] >= 40 else "#2ea043"
+        rc = "#F14C4C" if d["risk_score"] >= 70 else "#F5A623" if d["risk_score"] >= 40 else "#23D18B"
         st.markdown(
             f'<div class="pal-card pal-card-accent" style="padding:10px 14px;">'
-            f'<div style="font-size:.65rem;color:#6b7685;">Active Investigation</div>'
-            f'<div style="font-size:.9rem;font-weight:600;color:#d4dce8;margin-top:2px;">{d["target_ip"]}</div>'
-            f'<div style="font-size:.68rem;color:#6b7685;">{d["case_id"]}</div>'
+            f'<div style="font-size:.65rem;color:#8C8C8C;">Active Investigation</div>'
+            f'<div style="font-size:.9rem;font-weight:600;color:#F0F0F0;margin-top:2px;">{d["target_ip"]}</div>'
+            f'<div style="font-size:.68rem;color:#8C8C8C;">{d["case_id"]}</div>'
             f'<div style="font-size:.72rem;margin-top:5px;">Risk: <span style="color:{rc};font-weight:600">{d["risk_score"]}/100</span></div>'
             f'</div>',
             unsafe_allow_html=True,
@@ -50,8 +50,8 @@ with st.sidebar:
 
 # ── Home content ───────────────────────────────────────────────────────────────
 st.markdown(
-    '<div style="font-size:1.6rem;font-weight:600;color:#4d9de0;margin-bottom:4px;">Mini Palantir</div>'
-    '<div style="font-size:.78rem;color:#6b7685;margin-bottom:24px;">'
+    '<div style="font-size:1.6rem;font-weight:600;color:#0B88F8;margin-bottom:4px;">Mini Palantir</div>'
+    '<div style="font-size:.78rem;color:#8C8C8C;margin-bottom:24px;">'
     'Geospatial intelligence · Link analysis · Pattern of life · Entity graph</div>',
     unsafe_allow_html=True,
 )
@@ -67,7 +67,7 @@ else:
 with col_form:
     st.markdown('<div class="pal-card pal-card-accent">', unsafe_allow_html=True)
     st.markdown(
-        '<div style="font-size:.9rem;font-weight:600;color:#d4dce8;margin-bottom:12px;">New Investigation</div>',
+        '<div style="font-size:.9rem;font-weight:600;color:#F0F0F0;margin-bottom:12px;">New Investigation</div>',
         unsafe_allow_html=True,
     )
     target_ip    = st.text_input("Target IP Address", value=_prefill, placeholder="e.g. 8.8.8.8", key="inp_ip")
@@ -77,7 +77,7 @@ with col_form:
 
     # ── Sample IP presets ──────────────────────────────────────────────────────
     st.markdown(
-        '<div style="font-size:.68rem;color:#6b7685;margin:10px 0 5px;">Sample targets</div>',
+        '<div style="font-size:.68rem;color:#8C8C8C;margin:10px 0 5px;">Sample targets</div>',
         unsafe_allow_html=True,
     )
     SAMPLE_IPS = [

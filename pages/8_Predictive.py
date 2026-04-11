@@ -28,8 +28,8 @@ stats  = d["cluster_stats"]
 bg     = d["base_geo"]
 
 st.markdown(
-    '<div style="font-size:1.1rem;font-weight:600;color:#d4dce8;margin-bottom:3px;">Predictive Intelligence</div>'
-    '<div style="font-size:.75rem;color:#6b7685;margin-bottom:18px;">'
+    '<div style="font-size:1.1rem;font-weight:600;color:#F0F0F0;margin-bottom:3px;">Predictive Intelligence</div>'
+    '<div style="font-size:.75rem;color:#8C8C8C;margin-bottom:18px;">'
     'Behavior forecast · Drift detection · Counter-intelligence signals</div>',
     unsafe_allow_html=True,
 )
@@ -70,11 +70,11 @@ with tab_next:
         st.markdown(
             f'<div class="pal-card pal-card-accent">'
             f'<div class="section-hdr">Next Active Window</div>'
-            f'<div style="font-size:1.6rem;font-weight:700;color:#58a6ff">{nw["peak_day"]}</div>'
-            f'<div style="font-size:1.2rem;color:#e6edf3">{nw["peak_hour"]:02d}:00 – {(nw["peak_hour"]+2)%24:02d}:00</div>'
-            f'<div style="font-size:.8rem;color:#8b949e;margin-top:8px;">'
-            f'In approximately <b style="color:#d29922">{nw["hours_until"]}h</b></div>'
-            f'<div style="font-size:.75rem;color:#8b949e;margin-top:4px;">'
+            f'<div style="font-size:1.6rem;font-weight:700;color:#0B88F8">{nw["peak_day"]}</div>'
+            f'<div style="font-size:1.2rem;color:#F0F0F0">{nw["peak_hour"]:02d}:00 – {(nw["peak_hour"]+2)%24:02d}:00</div>'
+            f'<div style="font-size:.8rem;color:#8C8C8C;margin-top:8px;">'
+            f'In approximately <b style="color:#F5A623">{nw["hours_until"]}h</b></div>'
+            f'<div style="font-size:.75rem;color:#8C8C8C;margin-top:4px;">'
             f'{nw["next_window"].strftime("%Y-%m-%d %H:%M")}</div>'
             f'<div style="margin-top:12px;">'
             f'<div class="risk-bar-bg"><div class="risk-bar" style="width:{min(nw["confidence"],100)}%;background:{conf_c}"></div></div>'
@@ -89,11 +89,11 @@ with tab_next:
             y=nw["hour_probs"],
             marker=dict(
                 color=nw["hour_probs"],
-                colorscale=[[0,"#161b22"],[1,"#58a6ff"]],
-                line=dict(color="#0d1117", width=0.5),
+                colorscale=[[0,"#1C1C1C"],[1,"#0B88F8"]],
+                line=dict(color="#0F0F0F", width=0.5),
             ),
         ))
-        fig_hp.add_vline(x=nw["peak_hour"], line_color="#d29922", line_dash="dash")
+        fig_hp.add_vline(x=nw["peak_hour"], line_color="#F5A623", line_dash="dash")
         themed(fig_hp, "Hourly Activity Probability", height=220)
         fig_hp.update_layout(xaxis=dict(title="Hour", dtick=4), yaxis=dict(title="Probability"),
                              margin=dict(l=30,r=10,t=40,b=30))
@@ -105,11 +105,11 @@ with tab_next:
             st.markdown(
                 f'<div class="pal-card pal-card-green">'
                 f'<div class="section-hdr">Predicted Next Location</div>'
-                f'<div style="font-size:1.4rem;font-weight:700;color:#3fb950">{nl["city"]}</div>'
-                f'<div style="font-size:.85rem;color:#8b949e">{nl["country"]} · {nl["zone"]}</div>'
-                f'<div style="font-family:monospace;font-size:.8rem;color:#58a6ff;margin-top:8px;">'
+                f'<div style="font-size:1.4rem;font-weight:700;color:#23D18B">{nl["city"]}</div>'
+                f'<div style="font-size:.85rem;color:#8C8C8C">{nl["country"]} · {nl["zone"]}</div>'
+                f'<div style="font-family:monospace;font-size:.8rem;color:#0B88F8;margin-top:8px;">'
                 f'{nl["lat"]}° N, {nl["lon"]}° E</div>'
-                f'<div style="font-size:.75rem;color:#8b949e;margin-top:4px;">'
+                f'<div style="font-size:.75rem;color:#8C8C8C;margin-top:4px;">'
                 f'Uncertainty radius: ±{nl["radius_km"]}km</div>'
                 f'<div style="margin-top:10px;">'
                 f'<div class="risk-bar-bg"><div class="risk-bar" style="width:{nl["confidence"]}%;background:{conf_c2}"></div></div>'
@@ -124,11 +124,11 @@ with tab_next:
                 y=nw["day_probs"],
                 marker=dict(
                     color=nw["day_probs"],
-                    colorscale=[[0,"#161b22"],[1,"#3fb950"]],
-                    line=dict(color="#0d1117", width=0.5),
+                    colorscale=[[0,"#1C1C1C"],[1,"#23D18B"]],
+                    line=dict(color="#0F0F0F", width=0.5),
                 ),
             ))
-            fig_dp.add_vline(x=nw["peak_day"], line_color="#d29922", line_dash="dash")
+            fig_dp.add_vline(x=nw["peak_day"], line_color="#F5A623", line_dash="dash")
             themed(fig_dp, "Day-of-Week Activity Probability", height=220)
             fig_dp.update_layout(xaxis=dict(title=""), yaxis=dict(title="Probability"),
                                  margin=dict(l=30,r=10,t=40,b=30))
@@ -142,7 +142,7 @@ with tab_next:
             folium.Circle(
                 location=[nl["lat"], nl["lon"]],
                 radius=nl["radius_km"] * 1000,
-                color="#3fb950", fill=True, fill_opacity=0.12,
+                color="#23D18B", fill=True, fill_opacity=0.12,
                 tooltip=f"Uncertainty radius: ±{nl['radius_km']}km",
             ).add_to(pred_map)
             # Prediction pin
@@ -159,7 +159,7 @@ with tab_next:
                     folium.CircleMarker(
                         location=[row["centroid_lat"], row["centroid_lon"]],
                         radius=max(6, float(row["score"]) * 30),
-                        color="#58a6ff", fill=True, fill_opacity=min(alpha, 0.5),
+                        color="#0B88F8", fill=True, fill_opacity=min(alpha, 0.5),
                         tooltip=f"{row['label']}: score {row['score']:.3f}",
                     ).add_to(pred_map)
 
@@ -180,14 +180,14 @@ with tab_forecast:
         fig_fc.add_trace(go.Scatter(
             x=historical["date"].astype(str), y=historical["forecast_hours"],
             name="Historical", mode="lines+markers",
-            line=dict(color="#58a6ff", width=2),
+            line=dict(color="#0B88F8", width=2),
             marker=dict(size=5),
         ))
         # Forecast line
         fig_fc.add_trace(go.Scatter(
             x=predicted["date"].astype(str), y=predicted["forecast_hours"],
             name="Forecast", mode="lines+markers",
-            line=dict(color="#3fb950", width=2, dash="dash"),
+            line=dict(color="#23D18B", width=2, dash="dash"),
             marker=dict(size=6, symbol="diamond"),
         ))
         # Confidence band
@@ -201,8 +201,8 @@ with tab_forecast:
         # Today marker
         fig_fc.add_vline(
             x=str(pd.Timestamp.now().date()),
-            line_color="#d29922", line_dash="dash",
-            annotation_text="Today", annotation_font_color="#d29922",
+            line_color="#F5A623", line_dash="dash",
+            annotation_text="Today", annotation_font_color="#F5A623",
         )
         themed(fig_fc, "7-Day Activity Forecast (hours/day)", height=420)
         fig_fc.update_layout(xaxis_title="Date", yaxis_title="Active Hours",
@@ -227,7 +227,7 @@ with tab_drift:
         f'<div>'
         f'<div style="font-size:1rem;font-weight:700;color:{dc}">'
         f'{"DRIFT DETECTED" if drift["drift_detected"] else "NO SIGNIFICANT DRIFT"}</div>'
-        f'<div style="font-size:.75rem;color:#8b949e;">'
+        f'<div style="font-size:.75rem;color:#8C8C8C;">'
         f'Early: {drift.get("early_period","?")} · Recent: {drift.get("recent_period","?")}</div>'
         f'</div></div></div>',
         unsafe_allow_html=True,
@@ -239,7 +239,7 @@ with tab_drift:
         for change in drift["changes"]:
             st.markdown(
                 f'<div class="entity-row"><span class="dot dot-warn"></span>'
-                f'<span style="color:#d29922;font-size:.85rem;">{change}</span></div>',
+                f'<span style="color:#F5A623;font-size:.85rem;">{change}</span></div>',
                 unsafe_allow_html=True,
             )
 
@@ -249,7 +249,7 @@ with tab_drift:
         rp = drift["recent_profile"]
         cats = list(ep.keys())
         fig_r = go.Figure()
-        for profile, name, color in [(ep,"Early Period","#8b949e"), (rp,"Recent Period","#58a6ff")]:
+        for profile, name, color in [(ep,"Early Period","#8C8C8C"), (rp,"Recent Period","#0B88F8")]:
             vals = [profile[c] for c in cats]
             # Normalise roughly
             norms = [
@@ -268,16 +268,16 @@ with tab_drift:
             ))
         themed(fig_r, "Behavioral Profile: Early vs Recent", height=420)
         fig_r.update_layout(polar=dict(
-            bgcolor="#161b22",
-            radialaxis=dict(color="#484f58", gridcolor="#21262d", range=[0,1]),
-            angularaxis=dict(color="#8b949e", gridcolor="#21262d"),
+            bgcolor="#1C1C1C",
+            radialaxis=dict(color="#444444", gridcolor="#2A2A2A", range=[0,1]),
+            angularaxis=dict(color="#8C8C8C", gridcolor="#2A2A2A"),
         ))
         st.plotly_chart(fig_r, use_container_width=True)
 
         st.markdown(
             f'<div class="pal-card pal-card-accent" style="margin-top:8px">'
             f'<div class="section-hdr">Interpretation</div>'
-            f'<div style="font-size:.85rem;color:#e6edf3;">'
+            f'<div style="font-size:.85rem;color:#F0F0F0;">'
             f'A drift score above 25 suggests the target\'s behavior has meaningfully changed '
             f'between the early and recent periods. This could indicate:<br><br>'
             f'• <b>Life change</b> (new job, relocation, relationship) — benign<br>'
@@ -293,8 +293,8 @@ with tab_drift:
 # TAB 4 — COUNTER-INTELLIGENCE SIGNALS
 # ══════════════════════════════════════════════════════════════════
 with tab_ci:
-    ci_colors = {"HIGH": "#f85149", "MEDIUM": "#d29922", "LOW": "#3fb950"}
-    ci_c = ci_colors.get(ci["ci_level"], "#8b949e")
+    ci_colors = {"HIGH": "#F14C4C", "MEDIUM": "#F5A623", "LOW": "#23D18B"}
+    ci_c = ci_colors.get(ci["ci_level"], "#8C8C8C")
     ci_dot = {"HIGH": "dot-alert", "MEDIUM": "dot-warn", "LOW": "dot-live"}.get(ci["ci_level"], "dot-dead")
 
     st.markdown(
@@ -303,16 +303,16 @@ with tab_ci:
         f'<div style="font-size:2.5rem;font-weight:700;color:{ci_c}">{ci["ci_score"]}</div>'
         f'<div>'
         f'<div style="font-size:1.1rem;font-weight:700;color:{ci_c}">COUNTER-INTEL RISK: {ci["ci_level"]}</div>'
-        f'<div style="font-size:.75rem;color:#8b949e;">Probability that target is aware of monitoring</div>'
+        f'<div style="font-size:.75rem;color:#8C8C8C;">Probability that target is aware of monitoring</div>'
         f'</div></div></div>',
         unsafe_allow_html=True,
     )
 
-    signal_colors = {"critical": "#f85149","high": "#f85149","medium": "#d29922","clear": "#3fb950"}
+    signal_colors = {"critical": "#F14C4C","high": "#F14C4C","medium": "#F5A623","clear": "#23D18B"}
     signal_dots   = {"critical": "dot-alert","high": "dot-alert","medium": "dot-warn","clear": "dot-live"}
 
     for msg, level in ci["signals"]:
-        sc = signal_colors.get(level, "#8b949e")
+        sc = signal_colors.get(level, "#8C8C8C")
         sd = signal_dots.get(level, "dot-dead")
         st.markdown(
             f'<div class="entity-row"><span class="dot {sd}"></span>'
@@ -326,7 +326,7 @@ with tab_ci:
     st.markdown(
         f'<div class="pal-card pal-card-accent" style="margin-top:20px">'
         f'<div class="section-hdr">What is Counter-Intelligence Detection?</div>'
-        f'<div style="font-size:.82rem;color:#e6edf3;line-height:1.6;">'
+        f'<div style="font-size:.82rem;color:#F0F0F0;line-height:1.6;">'
         f'This module identifies behavioral signals that suggest the target may be <b>aware of surveillance</b>. '
         f'These include:<br><br>'
         f'<b>VPN/proxy use</b> — routing traffic through anonymising infrastructure<br>'
@@ -343,12 +343,12 @@ with tab_ci:
     fig_cig = go.Figure(go.Indicator(
         mode="gauge+number",
         value=ci["ci_score"],
-        title={"text": "Counter-Intel Risk Score", "font": {"size": 12, "color": "#8b949e"}},
+        title={"text": "Counter-Intel Risk Score", "font": {"size": 12, "color": "#8C8C8C"}},
         number={"font": {"size": 32, "color": ci_c}},
         gauge={
             "axis": {"range": [0, 100]},
             "bar":  {"color": ci_c, "thickness": 0.25},
-            "bgcolor": "#161b22", "borderwidth": 0,
+            "bgcolor": "#1C1C1C", "borderwidth": 0,
             "steps": [
                 {"range": [0,  30], "color": "#1f3a2e"},
                 {"range": [30, 60], "color": "#3a2a1f"},

@@ -20,8 +20,8 @@ stats = d["cluster_stats"]
 bg    = d["base_geo"]
 
 st.markdown(
-    '<div style="font-size:1.1rem;font-weight:600;color:#d4dce8;margin-bottom:3px;">Behavioral Fingerprint</div>'
-    '<div style="font-size:.75rem;color:#6b7685;margin-bottom:18px;">'
+    '<div style="font-size:1.1rem;font-weight:600;color:#F0F0F0;margin-bottom:3px;">Behavioral Fingerprint</div>'
+    '<div style="font-size:.75rem;color:#8C8C8C;margin-bottom:18px;">'
     '12-dimensional behavioral identity signature · Cross-IP matching</div>',
     unsafe_allow_html=True,
 )
@@ -64,20 +64,20 @@ with tab_print:
             theta=labels + [labels[0]],
             fill="toself",
             name=d["target_ip"],
-            line=dict(color="#58a6ff", width=2),
+            line=dict(color="#0B88F8", width=2),
             fillcolor="rgba(88,166,255,0.15)",
-            marker=dict(size=6, color="#58a6ff"),
+            marker=dict(size=6, color="#0B88F8"),
         ))
         themed(fig_fp, f"Behavioral Fingerprint — {d['target_ip']}", height=520)
         fig_fp.update_layout(
             polar=dict(
-                bgcolor="#161b22",
+                bgcolor="#1C1C1C",
                 radialaxis=dict(
-                    color="#484f58", gridcolor="#21262d",
+                    color="#444444", gridcolor="#2A2A2A",
                     range=[0, 1], tickfont=dict(size=8),
                 ),
                 angularaxis=dict(
-                    color="#8b949e", gridcolor="#21262d",
+                    color="#8C8C8C", gridcolor="#2A2A2A",
                     tickfont=dict(size=9),
                 ),
             ),
@@ -101,12 +101,12 @@ with tab_print:
                     unsafe_allow_html=True)
         for key, label in FEATURE_LABELS.items():
             val = fp["features"].get(key, 0)
-            bar_color = "#58a6ff" if val < 0.5 else "#d29922" if val < 0.8 else "#f85149"
+            bar_color = "#0B88F8" if val < 0.5 else "#F5A623" if val < 0.8 else "#F14C4C"
             bar_w = int(val * 100)
             st.markdown(
                 f'<div style="margin-bottom:8px;">'
-                f'<div style="display:flex;justify-content:space-between;font-size:.72rem;color:#8b949e;margin-bottom:3px;">'
-                f'<span>{label}</span><span style="color:#e6edf3">{val:.3f}</span>'
+                f'<div style="display:flex;justify-content:space-between;font-size:.72rem;color:#8C8C8C;margin-bottom:3px;">'
+                f'<span>{label}</span><span style="color:#F0F0F0">{val:.3f}</span>'
                 f'</div>'
                 f'<div class="risk-bar-bg"><div class="risk-bar" style="width:{bar_w}%;background:{bar_color}"></div></div>'
                 f'</div>',
@@ -118,9 +118,9 @@ with tab_print:
         st.markdown(
             f'<div class="pal-card" style="margin-top:12px;padding:10px 14px;">'
             f'<div class="section-hdr">Fingerprint Hash</div>'
-            f'<div style="font-family:monospace;font-size:1.1rem;color:#58a6ff;letter-spacing:.1em">'
+            f'<div style="font-family:monospace;font-size:1.1rem;color:#0B88F8;letter-spacing:.1em">'
             f'FP-{fp_hash}</div>'
-            f'<div style="font-size:.7rem;color:#484f58;margin-top:4px;">'
+            f'<div style="font-size:.7rem;color:#444444;margin-top:4px;">'
             f'Use this hash to match against other targets</div>'
             f'</div>',
             unsafe_allow_html=True,
@@ -131,7 +131,7 @@ with tab_print:
 # ══════════════════════════════════════════════════════════════════
 with tab_compare:
     st.markdown(
-        '<div style="font-size:.82rem;color:#8b949e;margin-bottom:16px;">'
+        '<div style="font-size:.82rem;color:#8C8C8C;margin-bottom:16px;">'
         'Simulate a second target by entering custom behavioral parameters, '
         'then compare fingerprints to assess if they may be the same individual.'
         '</div>',
@@ -162,8 +162,8 @@ with tab_compare:
 
         fig_cmp = go.Figure()
         for vals_list, name, color, fill in [
-            (t1_vals, d["target_ip"], "#58a6ff", "rgba(88,166,255,0.12)"),
-            (t2_list, "Target 2 (simulated)", "#f85149", "rgba(248,81,73,0.12)"),
+            (t1_vals, d["target_ip"], "#0B88F8", "rgba(88,166,255,0.12)"),
+            (t2_list, "Target 2 (simulated)", "#F14C4C", "rgba(248,81,73,0.12)"),
         ]:
             fig_cmp.add_trace(go.Scatterpolar(
                 r=vals_list + [vals_list[0]],
@@ -175,9 +175,9 @@ with tab_compare:
             ))
         themed(fig_cmp, "Fingerprint Comparison", height=500)
         fig_cmp.update_layout(polar=dict(
-            bgcolor="#161b22",
-            radialaxis=dict(color="#484f58", gridcolor="#21262d", range=[0,1]),
-            angularaxis=dict(color="#8b949e", gridcolor="#21262d", tickfont=dict(size=8)),
+            bgcolor="#1C1C1C",
+            radialaxis=dict(color="#444444", gridcolor="#2A2A2A", range=[0,1]),
+            angularaxis=dict(color="#8C8C8C", gridcolor="#2A2A2A", tickfont=dict(size=8)),
         ))
         st.plotly_chart(fig_cmp, use_container_width=True)
 
@@ -188,7 +188,7 @@ with tab_compare:
         euclidean  = float(np.linalg.norm(t1_arr - t2_arr))
         similarity = round(cosine_sim * 100, 1)
         match_label = "LIKELY SAME INDIVIDUAL" if similarity > 85 else "POSSIBLE MATCH" if similarity > 70 else "DIFFERENT INDIVIDUALS"
-        match_color = "#f85149" if similarity > 85 else "#d29922" if similarity > 70 else "#3fb950"
+        match_color = "#F14C4C" if similarity > 85 else "#F5A623" if similarity > 70 else "#23D18B"
 
         st.markdown(
             f'<div class="pal-card" style="border-left:4px solid {match_color};margin-top:8px;">'
@@ -196,7 +196,7 @@ with tab_compare:
             f'<div style="font-size:2rem;font-weight:700;color:{match_color}">{similarity}%</div>'
             f'<div>'
             f'<div style="font-size:.9rem;font-weight:700;color:{match_color}">{match_label}</div>'
-            f'<div style="font-size:.72rem;color:#8b949e;">Cosine similarity · Euclidean distance: {euclidean:.3f}</div>'
+            f'<div style="font-size:.72rem;color:#8C8C8C;">Cosine similarity · Euclidean distance: {euclidean:.3f}</div>'
             f'</div></div></div>',
             unsafe_allow_html=True,
         )
@@ -250,7 +250,7 @@ with tab_decode:
         st.markdown(
             f'<div class="entity-row">'
             f'<span class="badge badge-{kind}">→</span>'
-            f'<span style="font-size:.85rem;color:#e6edf3">{msg}</span>'
+            f'<span style="font-size:.85rem;color:#F0F0F0">{msg}</span>'
             f'</div>',
             unsafe_allow_html=True,
         )
@@ -258,14 +258,14 @@ with tab_decode:
     # Bar chart of all dimensions
     labels  = [FEATURE_LABELS.get(k, k) for k in fp["labels"]]
     values  = fp["values"]
-    colors  = ["#f85149" if v > 0.75 else "#d29922" if v > 0.4 else "#58a6ff" for v in values]
+    colors  = ["#F14C4C" if v > 0.75 else "#F5A623" if v > 0.4 else "#0B88F8" for v in values]
 
     fig_bar = go.Figure(go.Bar(
         x=values, y=labels, orientation="h",
-        marker=dict(color=colors, line=dict(color="#0d1117", width=0.5)),
+        marker=dict(color=colors, line=dict(color="#0F0F0F", width=0.5)),
         text=[f"{v:.3f}" for v in values],
         textposition="outside",
-        textfont=dict(color="#e6edf3", size=9),
+        textfont=dict(color="#F0F0F0", size=9),
     ))
     themed(fig_bar, "Fingerprint Dimension Values (0 = min, 1 = max)", height=420)
     fig_bar.update_layout(
@@ -278,13 +278,13 @@ with tab_decode:
     st.markdown(
         '<div class="pal-card pal-card-accent" style="margin-top:8px">'
         '<div class="section-hdr">Why Behavioral Fingerprinting Works</div>'
-        '<div style="font-size:.82rem;color:#e6edf3;line-height:1.6;">'
+        '<div style="font-size:.82rem;color:#F0F0F0;line-height:1.6;">'
         'Every person has consistent behavioral patterns — when they work, how long sessions run, '
         'how mobile they are, whether they work weekends. These patterns persist even when:<br><br>'
         '• The IP address changes (ISP rotation, VPN)<br>'
         '• The device changes<br>'
         '• The user switches networks<br><br>'
-        'A cosine similarity above <b style="color:#d29922">85%</b> between two fingerprints is a '
+        'A cosine similarity above <b style="color:#F5A623">85%</b> between two fingerprints is a '
         'strong indicator of the same individual. This is a capability not offered in Palantir\'s '
         'standard platform.'
         '</div></div>',

@@ -13,8 +13,8 @@ inject_theme()
 d = require_data()
 
 st.markdown(
-    '<div style="font-size:1.1rem;font-weight:600;color:#d4dce8;margin-bottom:3px;">ARIA — AI Analyst</div>'
-    '<div style="font-size:.75rem;color:#6b7685;margin-bottom:18px;">'
+    '<div style="font-size:1.1rem;font-weight:600;color:#F0F0F0;margin-bottom:3px;">ARIA — AI Analyst</div>'
+    '<div style="font-size:.75rem;color:#8C8C8C;margin-bottom:18px;">'
     'Advanced Reasoning Intelligence Analyst · Powered by Claude</div>',
     unsafe_allow_html=True,
 )
@@ -27,7 +27,7 @@ with st.sidebar:
         api_key = env_key
         st.markdown(
             '<div class="entity-row"><span class="dot dot-live"></span>'
-            '<span style="font-size:.8rem;color:#3fb950">API key loaded from environment</span></div>',
+            '<span style="font-size:.8rem;color:#23D18B">API key loaded from environment</span></div>',
             unsafe_allow_html=True,
         )
     else:
@@ -59,7 +59,7 @@ if not api_key:
         '<div class="pal-card pal-card-orange">'
         '<b>ARIA requires an Anthropic API key.</b><br>'
         'Enter your key in the sidebar to activate the AI analyst. '
-        'Get a free key at <a href="https://console.anthropic.com" target="_blank" style="color:#58a6ff">console.anthropic.com</a>'
+        'Get a free key at <a href="https://console.anthropic.com" target="_blank" style="color:#0B88F8">console.anthropic.com</a>'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -81,10 +81,10 @@ with tab_brief:
         st.markdown(
             f'<div class="pal-card pal-card-accent">'
             f'<div class="section-hdr">Investigation</div>'
-            f'<div style="font-size:.8rem;color:#e6edf3"><b>{d["case_id"]}</b></div>'
-            f'<div style="font-size:.75rem;color:#8b949e">{d["target_ip"]}</div>'
+            f'<div style="font-size:.8rem;color:#F0F0F0"><b>{d["case_id"]}</b></div>'
+            f'<div style="font-size:.75rem;color:#8C8C8C">{d["target_ip"]}</div>'
             f'<div style="margin-top:10px;font-size:.75rem;">Risk: <b style="color:{rc}">{d["risk_score"]}/100</b></div>'
-            f'<div style="font-size:.7rem;color:#8b949e;margin-top:4px;">'
+            f'<div style="font-size:.7rem;color:#8C8C8C;margin-top:4px;">'
             f'{d["analyzed_at"].strftime("%Y-%m-%d %H:%M")}</div>'
             f'</div>',
             unsafe_allow_html=True,
@@ -155,7 +155,7 @@ with tab_chat:
 # ── Hypothesis Board ───────────────────────────────────────────────────────────
 with tab_hypothesis:
     st.markdown(
-        '<div style="font-size:.8rem;color:#8b949e;margin-bottom:16px;">'
+        '<div style="font-size:.8rem;color:#8C8C8C;margin-bottom:16px;">'
         'ARIA generates <b>competing hypotheses</b> for a specific observation — '
         'forcing consideration of alternative explanations. Palantir shows data; ARIA reasons about it.'
         '</div>',
@@ -202,7 +202,7 @@ with tab_hypothesis:
             st.markdown(
                 f'<div class="pal-card pal-card-orange">'
                 f'<div class="section-hdr">OBSERVATION</div>'
-                f'<div style="font-size:.9rem;color:#e6edf3">{observation}</div>'
+                f'<div style="font-size:.9rem;color:#F0F0F0">{observation}</div>'
                 f'</div>',
                 unsafe_allow_html=True,
             )
