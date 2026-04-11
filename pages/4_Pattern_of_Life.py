@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 from core.state import inject_theme, require_data, themed
 
-st.set_page_config(page_title="Pattern of Life · Mini Palantir", page_icon="📅", layout="wide")
+st.set_page_config(page_title="Pattern of Life · ARGUS", page_icon="📅", layout="wide")
 inject_theme()
 d = require_data()
 

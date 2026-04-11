@@ -8,7 +8,7 @@ import os
 import anthropic
 
 SYSTEM_PROMPT = """You are ARIA — Advanced Reasoning Intelligence Analyst.
-You are an elite intelligence analyst embedded inside the Mini Palantir platform.
+You are an elite intelligence analyst embedded inside the ARGUS platform.
 
 Your capabilities go beyond standard platforms:
 1. You proactively surface insights analysts might miss

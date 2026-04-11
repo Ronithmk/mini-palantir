@@ -8,7 +8,7 @@ import os
 from core.state import inject_theme, require_data, risk_color
 from core.ai_analyst import AIAnalyst, build_context, SYSTEM_PROMPT
 
-st.set_page_config(page_title="AI Analyst · Mini Palantir", page_icon="🤖", layout="wide")
+st.set_page_config(page_title="AI Analyst · ARGUS", page_icon="🤖", layout="wide")
 inject_theme()
 d = require_data()
 

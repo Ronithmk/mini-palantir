@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import pandas as pd
 from core.state import inject_theme, require_data, themed, metric_html, risk_color
 
-st.set_page_config(page_title="Overview · Mini Palantir", page_icon="📊", layout="wide")
+st.set_page_config(page_title="Overview · ARGUS", page_icon="📊", layout="wide")
 inject_theme()
 d = require_data()
 

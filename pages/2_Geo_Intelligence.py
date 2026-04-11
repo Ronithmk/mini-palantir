@@ -7,7 +7,7 @@ from streamlit_folium import st_folium
 from core.state import (inject_theme, require_data, themed, MAPBOX,
                         ZONE_TYPE_FOLIUM, zone_type_badge, sparkline_svg)
 
-st.set_page_config(page_title="Geo Intelligence · Mini Palantir", page_icon="🗺️", layout="wide")
+st.set_page_config(page_title="Geo Intelligence · ARGUS", page_icon="🗺️", layout="wide")
 inject_theme()
 d = require_data()
 

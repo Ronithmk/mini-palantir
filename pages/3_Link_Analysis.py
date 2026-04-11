@@ -7,7 +7,7 @@ import pandas as pd
 from core.state import inject_theme, require_data, themed
 from core import graph as G_mod
 
-st.set_page_config(page_title="Link Analysis · Mini Palantir", page_icon="🕸️", layout="wide")
+st.set_page_config(page_title="Link Analysis · ARGUS", page_icon="🕸️", layout="wide")
 inject_theme()
 d = require_data()
 

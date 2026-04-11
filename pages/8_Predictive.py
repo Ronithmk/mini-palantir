@@ -19,7 +19,7 @@ from core.predictor import (
     detect_counter_intel,
 )
 
-st.set_page_config(page_title="Predictive · Mini Palantir", page_icon="🔮", layout="wide")
+st.set_page_config(page_title="Predictive · ARGUS", page_icon="🔮", layout="wide")
 inject_theme()
 d = require_data()
 

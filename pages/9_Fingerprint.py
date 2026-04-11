@@ -11,7 +11,7 @@ import numpy as np
 from core.state import inject_theme, require_data, themed, risk_color
 from core.predictor import build_fingerprint
 
-st.set_page_config(page_title="Fingerprint · Mini Palantir", page_icon="🧬", layout="wide")
+st.set_page_config(page_title="Fingerprint · ARGUS", page_icon="🧬", layout="wide")
 inject_theme()
 d = require_data()
 

@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 from core.state import inject_theme, require_data, themed
 from core.clusterer import CAT_COLORS
 
-st.set_page_config(page_title="Intel Feed · Mini Palantir", page_icon="🌐", layout="wide")
+st.set_page_config(page_title="Intel Feed · ARGUS", page_icon="🌐", layout="wide")
 inject_theme()
 d = require_data()
 

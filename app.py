@@ -1,4 +1,4 @@
-"""Mini Palantir — Home / Investigation Launcher."""
+"""ARGUS — Home / Investigation Launcher."""
 import streamlit as st
 import uuid
 from datetime import datetime
@@ -10,8 +10,8 @@ from core.entity import build_entity_list, compute_risk
 from core import graph as G_mod
 
 st.set_page_config(
-    page_title="Mini Palantir",
-    page_icon="🔵",
+    page_title="ARGUS",
+    page_icon="👁️",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -20,7 +20,7 @@ inject_theme()
 # ── Sidebar ────────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown(
-        '<div style="font-size:1rem;font-weight:600;color:#0B88F8;margin-bottom:2px;">Mini Palantir</div>'
+        '<div style="font-size:1rem;font-weight:600;color:#0B88F8;margin-bottom:2px;">ARGUS</div>'
         '<div style="font-size:.68rem;color:#8C8C8C;margin-bottom:10px;">Intelligence Platform</div>',
         unsafe_allow_html=True,
     )
@@ -39,18 +39,21 @@ with st.sidebar:
             f'</div>',
             unsafe_allow_html=True,
         )
-        st.page_link("pages/1_Overview.py",         label="Overview",        icon="◎")
-        st.page_link("pages/2_Geo_Intelligence.py", label="Geo Intelligence", icon="◉")
-        st.page_link("pages/3_Link_Analysis.py",    label="Link Analysis",   icon="◈")
-        st.page_link("pages/4_Pattern_of_Life.py",  label="Pattern of Life", icon="◐")
-        st.page_link("pages/5_Intel_Feed.py",       label="Intel Feed",      icon="◑")
-        st.page_link("pages/6_Report.py",           label="Report",          icon="◷")
+        st.page_link("pages/1_Overview.py",         label="Overview",         icon="📊")
+        st.page_link("pages/2_Geo_Intelligence.py", label="Geo Intelligence",  icon="🗺️")
+        st.page_link("pages/3_Link_Analysis.py",    label="Link Analysis",    icon="🕸️")
+        st.page_link("pages/4_Pattern_of_Life.py",  label="Pattern of Life",  icon="📅")
+        st.page_link("pages/5_Intel_Feed.py",       label="Intel Feed",       icon="🌐")
+        st.page_link("pages/6_Report.py",           label="Report",           icon="📋")
+        st.page_link("pages/7_AI_Analyst.py",       label="AI Analyst",       icon="🤖")
+        st.page_link("pages/8_Predictive.py",       label="Predictive",       icon="🔮")
+        st.page_link("pages/9_Fingerprint.py",      label="Fingerprint",      icon="🧬")
     st.markdown("---")
     st.caption("Free APIs · No key required")
 
 # ── Home content ───────────────────────────────────────────────────────────────
 st.markdown(
-    '<div style="font-size:1.6rem;font-weight:600;color:#0B88F8;margin-bottom:4px;">Mini Palantir</div>'
+    '<div style="font-size:1.6rem;font-weight:600;color:#0B88F8;margin-bottom:4px;">ARGUS</div>'
     '<div style="font-size:.78rem;color:#8C8C8C;margin-bottom:24px;">'
     'Geospatial intelligence · Link analysis · Pattern of life · Entity graph</div>',
     unsafe_allow_html=True,
