@@ -52,9 +52,7 @@ The platform is entirely free to run. The only optional paid component is the AR
 | 7 | AI Analyst | ARIA — Claude claude-sonnet-4-6 powered chat analyst with auto-generated briefing and hypothesis engine |
 | 8 | Predictive | Next active time window forecast, 7-day activity volume forecast, behavioural drift detection, counter-intelligence signal detector |
 | 9 | Fingerprint | 12-dimensional behavioural identity vector, radar chart, target comparison with cosine similarity, fingerprint decoder |
-| 10 | Threat Intel | Tor exit-node check, ASN/cloud/VPN/hosting tagging, reverse DNS, combined threat band score |
-| 11 | Watchlist | Persisted multi-case management, fingerprint-based "same operator" alerts across investigations |
-| 12 | Wargame | **Beyond Palantir.** Game-theoretic defender vs attacker simulation — DETECT/HARDEN/DECEIVE budget allocation, payoff matrix, attacker priors from fingerprint, equilibrium recommendation |
+| 10 | Operations | Three-in-one operations centre — **Threat Intel** (Tor exit list, ASN tagging, rDNS, threat band) · **Watchlist** (persisted multi-case management, fingerprint-match alerts) · **Wargame** (game-theoretic defender vs attacker simulation — *the not-in-Palantir feature*) |
 
 ---
 
@@ -127,9 +125,7 @@ mini_palantir/
 │   ├── 7_AI_Analyst.py         # ARIA — Claude-powered chat analyst
 │   ├── 8_Predictive.py         # Forecasts, drift detection, CI signals
 │   ├── 9_Fingerprint.py        # 12D behavioural identity fingerprint
-│   ├── 10_Threat_Intel.py      # Tor exit list, ASN tags, rDNS, threat band
-│   ├── 11_Watchlist.py         # Multi-case persistence, fingerprint-match alerts
-│   └── 12_Wargame.py           # Game-theoretic defender/attacker simulation
+│   └── 10_Operations.py        # Threat Intel + Watchlist + Wargame (tabbed)
 │
 ├── core/
 │   ├── __init__.py
@@ -316,7 +312,11 @@ Context sent to Claude includes: IP, geo, zone stats, risk factors, anomaly rate
 - **Compare Targets tab**: adjustable sliders for a simulated second target, cosine similarity score, LIKELY SAME INDIVIDUAL / POSSIBLE MATCH / DIFFERENT INDIVIDUALS verdict
 - **Fingerprint Decoder tab**: plain-English interpretation of each high/low dimension
 
-### Page 10 — Threat Intel
+### Page 10 — Operations
+
+Three operational capabilities consolidated into one page with top-level tabs.
+
+#### Threat Intel tab
 
 Free, key-less threat enrichment for the target IP.
 
@@ -325,15 +325,15 @@ Free, key-less threat enrichment for the target IP.
 - **Reverse DNS** via `socket.gethostbyaddr`, scanned for cloud-provider hostnames
 - **Combined threat band**: HIGH / MEDIUM / LOW / CLEAR with a 0–100 score and a horizontal bar chart of contributing components
 
-### Page 11 — Watchlist
+#### Watchlist tab
 
 Persisted case management. Investigations are written to `~/.argus/watchlist.json` so they survive a Streamlit restart.
 
-- **Active tab**: snapshot the current investigation with an investigator note
-- **Saved tab**: searchable table of every saved case (case ID, IP, geo, ISP, risk, timestamp, note); per-case delete + clear-all
-- **Cross-Case Alerts tab**: cosine-similarity match against the 12-D behavioural fingerprint of every other saved case — when two different IPs share a fingerprint above the configurable threshold (default 0.85), a `FINGERPRINT MATCH` alert fires (likely same operator across IPs); a separate `WATCHED HIGH RISK` alert fires when any saved case is above a risk threshold
+- **Active sub-tab**: snapshot the current investigation with an investigator note
+- **Saved sub-tab**: searchable table of every saved case (case ID, IP, geo, ISP, risk, timestamp, note); per-case delete + clear-all
+- **Cross-Case Alerts sub-tab**: cosine-similarity match against the 12-D behavioural fingerprint of every other saved case — when two different IPs share a fingerprint above the configurable threshold (default 0.85), a `FINGERPRINT MATCH` alert fires (likely same operator across IPs); a separate `WATCHED HIGH RISK` alert fires when any saved case is above a risk threshold
 
-### Page 12 — Wargame (not in Palantir)
+#### Wargame tab — *not in Palantir*
 
 Interactive security game. The defender allocates a unit budget across three postures; the attacker plays best-response from four strategies.
 
@@ -344,10 +344,10 @@ Interactive security game. The defender allocates a unit budget across three pos
 | DECEIVE — honeypots & canary tokens | INSIDER — compromised insider |
 | | SUPPLY — third-party / supply chain |
 
-- **Payoff matrix tab**: 3×4 heatmap of defender loss for every (defender, attacker) pair, plus a best-response table showing which attack each pure defence invites
-- **Attacker priors tab**: probability distribution over attacker strategies, computed from the target's behavioural fingerprint and threat band — e.g., high `night_activity` + `anomaly_rate` lifts PHISH; high `remote_zone` lifts SUPPLY; high `zone_diversity` lifts INSIDER; HIGH/MEDIUM threat band lifts EXPLOIT
-- **Allocation Sweep tab**: 3D scatter over the (DETECT, HARDEN, DECEIVE) simplex coloured by expected loss — visualises the loss landscape
-- **Recommendation tab**: equilibrium mix found by grid search over the simplex, current vs equilibrium loss delta, and a why-this-mix rationale
+- **Payoff Matrix sub-tab**: 3×4 heatmap of defender loss for every (defender, attacker) pair, plus a best-response table showing which attack each pure defence invites
+- **Attacker Priors sub-tab**: probability distribution over attacker strategies, computed from the target's behavioural fingerprint and threat band — e.g., high `night_activity` + `anomaly_rate` lifts PHISH; high `remote_zone` lifts SUPPLY; high `zone_diversity` lifts INSIDER; HIGH/MEDIUM threat band lifts EXPLOIT
+- **Allocation Sweep sub-tab**: 3D scatter over the (DETECT, HARDEN, DECEIVE) simplex coloured by expected loss — visualises the loss landscape
+- **Recommendation sub-tab**: equilibrium mix found by grid search over the simplex, current vs equilibrium loss delta, and a why-this-mix rationale
 
 This is the differentiator vs Palantir Foundry / Gotham — those platforms surface what *was*. The wargame engine answers *what's likely if I shift my budget here*, parameterised by the same fingerprint the rest of ARGUS produces.
 
