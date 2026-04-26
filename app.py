@@ -48,6 +48,9 @@ with st.sidebar:
         st.page_link("pages/7_AI_Analyst.py",       label="AI Analyst",       icon="🤖")
         st.page_link("pages/8_Predictive.py",       label="Predictive",       icon="🔮")
         st.page_link("pages/9_Fingerprint.py",      label="Fingerprint",      icon="🧬")
+        st.page_link("pages/10_Threat_Intel.py",    label="Threat Intel",     icon="🛡️")
+        st.page_link("pages/11_Watchlist.py",       label="Watchlist",        icon="📌")
+        st.page_link("pages/12_Wargame.py",         label="Wargame",          icon="♟️")
     st.markdown("---")
     st.caption("Free APIs · No key required")
 
@@ -175,6 +178,9 @@ with col_info:
         <div class="entity-row"><span class="badge badge-org">INTEL</span> Wikipedia · Reddit · Google News · DuckDuckGo</div>
         <div class="entity-row"><span class="badge badge-threat">RISK</span> Automated risk scoring with factor breakdown</div>
         <div class="entity-row"><span class="badge badge-org">AI</span> ARIA — Claude-powered analyst (Anthropic API key required)</div>
+        <div class="entity-row"><span class="badge badge-threat">TI</span> Threat intel enrichment — Tor exit list · ASN tags · reverse DNS</div>
+        <div class="entity-row"><span class="badge badge-zone">CASE</span> Watchlist & cross-case fingerprint matching</div>
+        <div class="entity-row"><span class="badge badge-ip">SIM</span> Adversary wargaming — game-theoretic budget allocation (not in Palantir)</div>
         </div>
         """,
         unsafe_allow_html=True,
