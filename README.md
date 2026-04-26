@@ -33,7 +33,7 @@ ARGUS accepts a public IPv4 address **or a domain name** (with optional `http(s)
 4. Clusters web content into topic groups using TF-IDF + KMeans
 5. Extracts entities (IPs, emails, URLs, organisations) from all text
 6. Scores risk via heuristic rules, builds an entity relationship graph
-7. Presents everything across 9 specialised analysis pages
+7. Presents the core findings in a consolidated dashboard, with specialist deep-dive pages kept available when needed
 
 The platform is entirely free to run. The only optional paid component is the ARIA AI Analyst, which requires an Anthropic API key.
 
@@ -44,7 +44,7 @@ The platform is entirely free to run. The only optional paid component is the AR
 | # | Page | What it does |
 |---|------|-------------|
 | Home | Investigation Launcher | IP input, sample presets, activity history config, launches the full pipeline |
-| 1 | Overview | Risk gauge, zone table, entity roster, predicted location, intel source breakdown |
+| 1 | Dashboard | Consolidated command dashboard: risk, target profile, activity map, heatmaps, zones, intel, graph, prediction, fingerprint, report export |
 | 2 | Geo Intelligence | Interactive Folium map with DBSCAN zone markers, connection lines, movement trail, zone cards with sparklines |
 | 3 | Link Analysis | NetworkX entity relationship graph rendered with Plotly, adjacency table |
 | 4 | Pattern of Life | Activity heatmaps (weekday × hour), daily timeline, duration distributions, calendar heatmap, behavioural profile card |
@@ -117,7 +117,7 @@ mini_palantir/
 ├── app.py                      # Home page — investigation launcher
 │
 ├── pages/
-│   ├── 1_Overview.py           # Risk score, zone table, entity roster
+│   ├── 1_Overview.py           # Consolidated dashboard for normal case review
 │   ├── 2_Geo_Intelligence.py   # Folium map, zone cards, movement trail
 │   ├── 3_Link_Analysis.py      # Entity relationship graph
 │   ├── 4_Pattern_of_Life.py    # Behavioural heatmaps and timeline
@@ -225,16 +225,19 @@ set_data() → st.session_state
 - **Sample presets**: Google DNS (8.8.8.8), Cloudflare (1.1.1.1), GitHub (github.com), Wikipedia (wikipedia.org)
 - Launches the full pipeline with a progress status panel
 
-### Page 1 — Overview
+### Page 1 — Dashboard
 
-Key metrics row: sessions, clustered sessions, total active hours, zones found, intel items, entities.
+The primary working view. It consolidates the most important outputs from the specialist modules so analysts do not need to move across many pages for a normal case review.
 
-- **Risk Gauge**: Plotly indicator, 0–100 with colour zones (green/orange/red)
-- **Predicted Location**: highest-likelihood zone centroid with confidence bar
-- **Target Profile**: IP, city, region, country, ISP, org, timezone, lat/lon
-- **Activity Zones table**: all non-noise DBSCAN clusters with sessions, hours, last seen
-- **Entity Roster**: top 20 extracted entities with type and confidence
-- **Intel Source Breakdown**: bar chart of items per source (Wikipedia, Reddit, News, DuckDuckGo)
+Tabs:
+
+- **Command**: risk gauge, target profile, predicted current location, risk factors, watchlist alert count, and intel source breakdown
+- **Geo + Activity**: session map, weekday/hour heatmap, time-by-zone chart, and activity-zone table
+- **Intel + Graph**: topic map, recent intel items, top connected graph nodes, and entity roster
+- **Predictive + Identity**: next active window, 7-day forecast, drift score, counter-intel signals, and behavioural fingerprint radar
+- **Report**: generated case summary, Markdown export, entity CSV export, and links to optional specialist views
+
+The sidebar now prioritises **Dashboard** and **Operations**. The older pages remain under **Deep dives** for cases where a user wants a larger specialist workspace.
 
 ### Page 2 — Geo Intelligence
 

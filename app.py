@@ -83,16 +83,17 @@ with st.sidebar:
             f'</div>',
             unsafe_allow_html=True,
         )
-        st.page_link("pages/1_Overview.py",         label="Overview",         icon="📊")
-        st.page_link("pages/2_Geo_Intelligence.py", label="Geo Intelligence",  icon="🗺️")
-        st.page_link("pages/3_Link_Analysis.py",    label="Link Analysis",    icon="🕸️")
-        st.page_link("pages/4_Pattern_of_Life.py",  label="Pattern of Life",  icon="📅")
-        st.page_link("pages/5_Intel_Feed.py",       label="Intel Feed",       icon="🌐")
-        st.page_link("pages/6_Report.py",           label="Report",           icon="📋")
-        st.page_link("pages/7_AI_Analyst.py",       label="AI Analyst",       icon="🤖")
-        st.page_link("pages/8_Predictive.py",       label="Predictive",       icon="🔮")
-        st.page_link("pages/9_Fingerprint.py",      label="Fingerprint",      icon="🧬")
+        st.page_link("pages/1_Overview.py",         label="Dashboard",        icon="📊")
         st.page_link("pages/10_Operations.py",      label="Operations",       icon="🛡️")
+        with st.expander("Deep dives", expanded=False):
+            st.page_link("pages/2_Geo_Intelligence.py", label="Geo Intelligence",  icon="🗺️")
+            st.page_link("pages/3_Link_Analysis.py",    label="Link Analysis",    icon="🕸️")
+            st.page_link("pages/4_Pattern_of_Life.py",  label="Pattern of Life",  icon="📅")
+            st.page_link("pages/5_Intel_Feed.py",       label="Intel Feed",       icon="🌐")
+            st.page_link("pages/6_Report.py",           label="Report",           icon="📋")
+            st.page_link("pages/7_AI_Analyst.py",       label="AI Analyst",       icon="🤖")
+            st.page_link("pages/8_Predictive.py",       label="Predictive",       icon="🔮")
+            st.page_link("pages/9_Fingerprint.py",      label="Fingerprint",      icon="🧬")
     st.markdown("---")
     st.caption("Free APIs · No key required")
 
@@ -215,7 +216,7 @@ with col_form:
                 "risk_factors": risk_factors,
                 "folium_map":   None,  # built lazily
             })
-            st.success(f"Investigation {case_id} launched. Use the sidebar to navigate.")
+            st.success(f"Investigation {case_id} launched. Open Dashboard for the consolidated view.")
             st.rerun()
 
 with col_info:
