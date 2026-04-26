@@ -1,13 +1,51 @@
 """ARGUS — Home / Investigation Launcher."""
-import streamlit as st
+import re
+import socket
 import uuid
 from datetime import datetime
+
+import streamlit as st
+
 from core.state import inject_theme, set_data, get_data, LIVE_CLOCK_HTML
 from core.geo import GeoAnalyzer
 from core.fetcher import IntelFetcher
 from core.clusterer import TextClusterer
 from core.entity import build_entity_list, compute_risk
 from core import graph as G_mod
+
+_IPV4_RE = re.compile(r"^\d{1,3}(?:\.\d{1,3}){3}$")
+
+
+def _normalise_target(raw: str) -> tuple[str | None, str | None, str | None]:
+    """Resolve user input to (ip, domain, error).
+
+    Accepts either a public IPv4 or a domain name (with optional scheme/path).
+    Returns the resolved IP plus the original domain (None if input was an IP).
+    """
+    s = raw.strip().lower()
+    if not s:
+        return None, None, "Enter an IP address or domain name."
+
+    # Strip URL noise: http(s)://, paths, ports, www.
+    s = re.sub(r"^https?://", "", s)
+    s = s.split("/", 1)[0]
+    s = s.split(":", 1)[0]
+    s = s.lstrip(".")
+    if s.startswith("www."):
+        s = s[4:]
+
+    if _IPV4_RE.match(s):
+        return s, None, None
+
+    if "." not in s or " " in s:
+        return None, None, f"`{raw}` is not a valid IP or domain."
+
+    try:
+        ip = socket.gethostbyname(s)
+    except Exception as exc:
+        return None, None, f"Could not resolve `{s}` ({exc.__class__.__name__})."
+
+    return ip, s, None
 
 st.set_page_config(
     page_title="ARGUS",
@@ -30,11 +68,17 @@ with st.sidebar:
     d = get_data()
     if d:
         rc = "#F14C4C" if d["risk_score"] >= 70 else "#F5A623" if d["risk_score"] >= 40 else "#23D18B"
+        _domain = d.get("target_domain")
+        _header = _domain or d["target_ip"]
+        _sub_ip = (f'<div style="font-size:.65rem;color:#8C8C8C;font-family:JetBrains Mono,monospace;">'
+                   f'{d["target_ip"]}</div>') if _domain else ""
         st.markdown(
             f'<div class="pal-card pal-card-accent" style="padding:10px 14px;">'
             f'<div style="font-size:.65rem;color:#8C8C8C;">Active Investigation</div>'
-            f'<div style="font-size:.9rem;font-weight:600;color:#F0F0F0;margin-top:2px;">{d["target_ip"]}</div>'
-            f'<div style="font-size:.68rem;color:#8C8C8C;">{d["case_id"]}</div>'
+            f'<div style="font-size:.9rem;font-weight:600;color:#F0F0F0;margin-top:2px;'
+            f'word-break:break-all;">{_header}</div>'
+            f'{_sub_ip}'
+            f'<div style="font-size:.68rem;color:#8C8C8C;margin-top:2px;">{d["case_id"]}</div>'
             f'<div style="font-size:.72rem;margin-top:5px;">Risk: <span style="color:{rc};font-weight:600">{d["risk_score"]}/100</span></div>'
             f'</div>',
             unsafe_allow_html=True,
@@ -74,27 +118,32 @@ with col_form:
         '<div style="font-size:.9rem;font-weight:600;color:#F0F0F0;margin-bottom:12px;">New Investigation</div>',
         unsafe_allow_html=True,
     )
-    target_ip    = st.text_input("Target IP Address", value=_prefill, placeholder="e.g. 8.8.8.8", key="inp_ip")
+    target_input = st.text_input(
+        "Target IP or Domain",
+        value=_prefill,
+        placeholder="e.g. 8.8.8.8 · github.com · https://example.org",
+        key="inp_ip",
+    )
     query        = st.text_input("Intelligence Query", placeholder="e.g. cybersecurity India", key="inp_q")
     history_days = st.slider("Activity History (days)", 10, 90, 45)
     n_topics     = st.slider("Topic Clusters", 3, 10, 6)
 
-    # ── Sample IP presets ──────────────────────────────────────────────────────
+    # ── Sample target presets (mix of IPs and domains) ────────────────────────
     st.markdown(
         '<div style="font-size:.68rem;color:#8C8C8C;margin:10px 0 5px;">Sample targets</div>',
         unsafe_allow_html=True,
     )
-    SAMPLE_IPS = [
+    SAMPLE_TARGETS = [
         ("8.8.8.8",       "Google DNS"),
         ("1.1.1.1",       "Cloudflare"),
-        ("208.67.222.222","OpenDNS"),
-        ("13.107.42.14",  "Microsoft"),
+        ("github.com",    "GitHub"),
+        ("wikipedia.org", "Wikipedia"),
     ]
-    chip_cols = st.columns(len(SAMPLE_IPS))
-    for col, (ip, label) in zip(chip_cols, SAMPLE_IPS):
+    chip_cols = st.columns(len(SAMPLE_TARGETS))
+    for col, (val, label) in zip(chip_cols, SAMPLE_TARGETS):
         with col:
-            if st.button(label, key=f"chip_{ip}", help=ip, use_container_width=True):
-                st.session_state["prefill_ip"] = ip
+            if st.button(label, key=f"chip_{val}", help=val, use_container_width=True):
+                st.session_state["prefill_ip"] = val
                 st.rerun()
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -102,13 +151,17 @@ with col_form:
     st.markdown('</div>', unsafe_allow_html=True)
 
     if launch:
-        if not target_ip.strip():
-            st.error("Enter a target IP address.")
+        target_ip, target_domain, err = _normalise_target(target_input or "")
+        if err:
+            st.error(err)
         else:
             geo = GeoAnalyzer()
+            label = "Resolving domain…" if target_domain else "Resolving target IP…"
+            with st.status(label, expanded=True) as status:
+                if target_domain:
+                    st.write(f"Domain `{target_domain}` resolves to `{target_ip}`")
 
-            with st.status("Resolving target IP…", expanded=True) as status:
-                base_geo = geo.lookup(target_ip.strip())
+                base_geo = geo.lookup(target_ip)
                 if base_geo is None:
                     st.error("Could not resolve IP. Use a public (non-private) address.")
                     st.stop()
@@ -143,7 +196,8 @@ with col_form:
             case_id = f"INV-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:4].upper()}"
             set_data({
                 "case_id":      case_id,
-                "target_ip":    target_ip.strip(),
+                "target_ip":    target_ip,
+                "target_domain": target_domain,
                 "analyzed_at":  datetime.now(),
                 "query":        effective_q,
                 "base_geo":     base_geo,

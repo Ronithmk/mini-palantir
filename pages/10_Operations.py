@@ -189,12 +189,16 @@ with main_wl:
             f'</div>',
             unsafe_allow_html=True,
         )
+        _dom = d.get("target_domain")
+        _target_main = _dom or d["target_ip"]
+        _target_sub  = (f'{d["target_ip"]} · {bg.get("city","")} · {bg.get("country","")}'
+                        if _dom else f'{bg.get("city","")} · {bg.get("country","")}')
         c2.markdown(
             f'<div class="pal-card" style="text-align:center">'
             f'<div style="font-size:.66rem;color:#8C8C8C;text-transform:uppercase;letter-spacing:.05em">Target</div>'
             f'<div style="font-size:.95rem;font-weight:600;color:#0B88F8;margin-top:6px;'
-            f'font-family:JetBrains Mono,monospace">{d["target_ip"]}</div>'
-            f'<div style="font-size:.66rem;color:#8C8C8C">{bg.get("city","")} · {bg.get("country","")}</div>'
+            f'font-family:JetBrains Mono,monospace;word-break:break-all">{_target_main}</div>'
+            f'<div style="font-size:.66rem;color:#8C8C8C">{_target_sub}</div>'
             f'</div>',
             unsafe_allow_html=True,
         )
@@ -251,12 +255,17 @@ with main_wl:
                 unsafe_allow_html=True,
             )
         else:
-            df = pd.DataFrame(saved)[
-                ["case_id", "target_ip", "city", "country", "isp", "risk_score", "saved_at", "note"]
+            df = pd.DataFrame(saved)
+            for col in ("target_domain", "note"):
+                if col not in df.columns:
+                    df[col] = ""
+            df = df[
+                ["case_id", "target_domain", "target_ip", "city", "country",
+                 "isp", "risk_score", "saved_at", "note"]
             ].rename(columns={
-                "case_id": "Case", "target_ip": "Target IP", "city": "City",
-                "country": "Country", "isp": "ISP", "risk_score": "Risk",
-                "saved_at": "Saved", "note": "Note",
+                "case_id": "Case", "target_domain": "Domain",
+                "target_ip": "Target IP", "city": "City", "country": "Country",
+                "isp": "ISP", "risk_score": "Risk", "saved_at": "Saved", "note": "Note",
             })
             st.dataframe(df, use_container_width=True, hide_index=True, height=320)
 

@@ -24,9 +24,10 @@ A Palantir-inspired open-source intelligence (OSINT) platform built with Python 
 
 ## Overview
 
-ARGUS accepts a public IPv4 address and an optional intelligence query. It then:
+ARGUS accepts a public IPv4 address **or a domain name** (with optional `http(s)://`, `www.`, port, or path — they're stripped automatically) and an optional intelligence query. It then:
 
-1. Resolves the IP to a real-world location via ip-api.com
+1. If a domain was supplied, resolves it to an IPv4 via the local DNS resolver (`socket.gethostbyname`); both the original domain and the resolved IP are persisted on the case record
+2. Resolves the IP to a real-world location via ip-api.com
 2. Simulates a multi-week session history using realistic spatial noise (DBSCAN clusters)
 3. Fetches open-source intelligence from Wikipedia, Reddit, Google News, and DuckDuckGo
 4. Clusters web content into topic groups using TF-IDF + KMeans
@@ -217,11 +218,11 @@ set_data() → st.session_state
 
 ### Home — Investigation Launcher
 
-- **Target IP field**: any public IPv4 address
+- **Target field**: any public IPv4 address **or domain name** — accepts `8.8.8.8`, `github.com`, `https://example.org/path`, `www.wikipedia.org:443`. Schemes, paths, ports, and `www.` are stripped; domains are resolved via `socket.gethostbyname`.
 - **Intelligence Query**: optional keyword (defaults to `city country` from geo lookup)
 - **Activity History slider**: 10–90 days of simulated sessions
 - **Topic Clusters slider**: 3–10 KMeans clusters for web content
-- **Sample presets**: Google DNS (8.8.8.8), Cloudflare (1.1.1.1), OpenDNS (208.67.222.222), Microsoft (13.107.42.14)
+- **Sample presets**: Google DNS (8.8.8.8), Cloudflare (1.1.1.1), GitHub (github.com), Wikipedia (wikipedia.org)
 - Launches the full pipeline with a progress status panel
 
 ### Page 1 — Overview

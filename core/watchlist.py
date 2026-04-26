@@ -62,9 +62,10 @@ def save_case(d: dict, fingerprint: dict, note: str = "") -> dict:
     bg = d.get("base_geo", {}) or {}
 
     case = {
-        "case_id":     d.get("case_id"),
-        "target_ip":   d.get("target_ip"),
-        "saved_at":    datetime.now().isoformat(timespec="seconds"),
+        "case_id":      d.get("case_id"),
+        "target_ip":    d.get("target_ip"),
+        "target_domain": d.get("target_domain"),
+        "saved_at":     datetime.now().isoformat(timespec="seconds"),
         "city":        bg.get("city", ""),
         "country":     bg.get("country", ""),
         "isp":         bg.get("isp", ""),
